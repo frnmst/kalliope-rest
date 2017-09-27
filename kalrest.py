@@ -23,12 +23,13 @@
 # SOFTWARE.
 
 import requests
+import magic
 import argparse
 import configparser
 import os
 import sys
 
-CONFIGURATION_FILE = "kr.conf"
+CONFIGURATION_FILE = "kalrest.conf"
 
 class Kr():
 
@@ -97,18 +98,39 @@ class Kr():
         get_synapse_prs.add_argument('synapse_name',
                                      metavar="SYNAPSE_NAME",
                                      help="the synapse name")
-        execute_by_name_prs.add_argument('execute_by_name',
-                                    metavar="SYNAPSE_NAME",
-                                    help="the synapse name")
-        execute_by_order_prs.add_argument('execute_by_order',
-                                    metavar="ORDER_STRING",
-                                    help="a textual version of the vocal order")
-        execute_by_audio_prs.add_argument('execute_by_audio',
-                                    metavar="FILE_NAME",
-                                    help="an audio file containing the vocal order")
+        execute_by_name_prs.add_argument('synapse_name',
+                                          metavar="SYNAPSE_NAME",
+                                         help="the synapse name")
+        execute_by_name_prs.add_argument('-v','--voice',
+                                          help="output the audio",
+                                          action="store_true")
+        execute_by_order_prs.add_argument('order_string',
+                                          metavar="ORDER_STRING",
+                                          help="a textual version of the vocal order")
+        execute_by_order_prs.add_argument('-v','--voice',
+                                          help="output the audio",
+                                          action="store_true")
+        execute_by_audio_prs.add_argument('audio_file',
+                                          metavar="FILE_NAME",
+                                          help="an audio file containing the vocal order")
+        execute_by_audio_prs.add_argument('-v','--voice',
+                                          help="output the audio",
+                                          action="store_true")
 
         return parser
 
+    def _perform_voice_output(self,args):
+        if args.voice:
+            self.no_voice = 'false'
+        else:
+            self.no_voice = 'true'
+
+
+    ################
+    # The REST API #
+    ################
+
+    # GET /
     def get_kalliope_version(self, args):
 
         try:
@@ -118,6 +140,7 @@ class Kr():
         except requests.exceptions.ConnectionError:
              sys.stderr.write("Unable to connect to server\n")
 
+    # GET /synapses
     def get_synapses(self, args):
 
         try:
@@ -126,6 +149,7 @@ class Kr():
         except requests.exceptions.ConnectionError:
              sys.stderr.write("Unable to connect to server\n")
 
+    # GET /synapses/<synapse_name>
     def get_synapse(self, args):
 
         try:
@@ -137,17 +161,72 @@ class Kr():
         except requests.exceptions.ConnectionError:
              sys.stderr.write("Unable to connect to server\n")
 
+    # POST /synapses/start/id/<synapse_name>
     def execute_by_name(self, args):
 
-        print("By name: " + str(args.execute_by_name))
+        try:
+            self._perform_voice_output(args)
+            payload = {'no_voice': self.no_voice}
+            print(self.no_voice)
+            r = requests.post(self.base_uri + "/synapses/start/id" + "/" + args.synapse_name,
+                              json=payload,
+                              auth=(self.username, self.password))
+            if r.status_code == 404:
+                sys.stderr.write("Unable to run " + args.synapse_name + ". Not found\n")
+            elif r.status_code == 401:
+                sys.stderr.write("Unauthorized to run synapse " + args.synapse_name + "\n")
+            else:
+                # Assume status_code being 200
+                print(r.text)
+        except requests.exceptions.ConnectionError:
+             sys.stderr.write("Unable to connect to server\n")
 
+    # POST /synapses/start/order
     def execute_by_order(self, args):
 
-        print("By order: " + str(args.execute_by_order))
+        try:
+            self._perform_voice_output(args)
+            payload = {'order': args.order_string, 'no_voice': self.no_voice}
+            r = requests.post(self.base_uri + "/synapses/start/order",
+                             json=payload,
+                             auth=(self.username, self.password))
+            if r.status_code == 404:
+                sys.stderr.write("Unable to run " + args.order_string + ". Not found\n")
+            elif r.status_code == 401:
+                sys.stderr.write("Unauthorized to run synapse " + args.order_string + "\n")
+            else:
+                # Assume status_code being 200
+                print(r.text)
+        except requests.exceptions.ConnectionError:
+             sys.stderr.write("Unable to connect to server\n")
 
+    # POST /synapses/start/audio
+    # Supported file types: WAV, MP3
     def execute_by_audio(self, args):
 
-        print("By audio: " + str(args.execute_by_audio))
+        try:
+            mime_of_file = magic.from_file(args.audio_file, mime=True)
+            if mime_of_file not in ['audio/wav', 'audio/x-wav', 'audio/mpeg3', 'audio/x-mpeg-3']:
+                sys.stderr.write("File is not WAV or MP3\n")
+            else:
+                try:
+                    self._perform_voice_output(args)
+                    files = {'file': (args.audio_file, open(args.audio_file, 'rb'),
+                             mime_of_file, {'Expires': '0'})}
+                    payload = {'no_voice': self.no_voice}
+                    r = requests.post(self.base_uri + "/synapses/start/audio",
+                                      files=files,
+                                      data=payload,
+                                      auth=(self.username, self.password))
+                    if r.status_code == 400:
+                        sys.stderr.write("No file was sent to the server\n")
+                    else:
+                        # Assume status_code being 200
+                        print(r.text)
+                except Exception as e:
+                    sys.stderr.write(str(e) + "\n")
+        except FileNotFoundError:
+            sys.stderr.write("File not found\n")
 
 if __name__ == '__main__':
 

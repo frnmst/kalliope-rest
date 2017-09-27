@@ -5,7 +5,9 @@ A frontend for the Kalliope REST API
 ## REST API
 
 See https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md
-and https://github.com/kalliope-project/kalliope/blob/master/Docs/settings.md#rest-api
+
+To be able to run synapses, you need to enable `CORS requests`. See 
+https://github.com/kalliope-project/kalliope/blob/master/Docs/settings.md#rest-api
 
 ## Help
 
@@ -25,11 +27,18 @@ optional arguments:
   -h, --help        show this help message and exit
 ```
 
+## Dependencies
+
+- Python 3.x
+- [Requests](https://github.com/requests/requests/)
+- [python-magic](https://github.com/ahupp/python-magic)
+
 ## TODO
 
+- Full coverage of HTTP response checks
+- Handle all possible exceptions
 - Unit tests
 - Documentation
-- Finish commands
 - PyPi package
 
 ## Copyright and License
