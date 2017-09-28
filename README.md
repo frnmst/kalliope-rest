@@ -25,6 +25,8 @@ positional arguments:
 
 optional arguments:
   -h, --help        show this help message and exit
+
+Return values: 0 OK, 1 Error
 ```
 
 ## Dependencies
@@ -35,7 +37,7 @@ optional arguments:
 
 ## TODO
 
-- Full coverage of HTTP response checks
+- Ability to pass paramters to the exec by name subcommand
 - Handle all possible exceptions
 - Unit tests
 - Documentation

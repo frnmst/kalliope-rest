@@ -73,7 +73,8 @@ class Kr():
     #   exec by-audio <audio-file>
     def _create_parser(self):
 
-        parser = argparse.ArgumentParser(description='Kalliope REST API frontend')
+        parser = argparse.ArgumentParser(description='Kalliope REST API frontend',
+                                         epilog = "Return values: 0 OK, 1 API Error, 2 Invalid command")
         subparsers = parser.add_subparsers(dest='command')
         subparsers.required = True
 
@@ -104,6 +105,9 @@ class Kr():
         execute_by_name_prs.add_argument('-v','--voice',
                                           help="output the audio",
                                           action="store_true")
+        execute_by_name_prs.add_argument('-p','--parameters',
+                                          metavar="PARAMETER_LIST",
+                                          help="pass parameters to the synapse")
         execute_by_order_prs.add_argument('order_string',
                                           metavar="ORDER_STRING",
                                           help="a textual version of the vocal order")
@@ -126,40 +130,75 @@ class Kr():
             self.no_voice = 'true'
 
 
-    ################
-    # The REST API #
-    ################
+    ########################
+    ########################
+    ##### The REST API #####
+    ########################
+    ########################
 
     # GET /
     def get_kalliope_version(self, args):
 
         try:
-            r = requests.get(self.base_uri + "/",auth=(self.username, self.password))
-            data = r.json()
-            print(data[u'Kalliope version'])
+            r = requests.get(self.base_uri + "/",
+                             auth=(self.username, self.password))
+            if r.status_code == 401:
+                sys.stderr.write("Unauthorized to read Kalliope's version\n")
+                return 1
+            elif r.status_code == 200:
+                data = r.json()
+                print(data[u'Kalliope version'])
+                return 0
+            else:
+                sys.stderr.write("Unkown HTTP error: " + str(r.status_code) + "\n")
+                return 1
         except requests.exceptions.ConnectionError:
              sys.stderr.write("Unable to connect to server\n")
+             return 1
 
     # GET /synapses
     def get_synapses(self, args):
 
         try:
-            r = requests.get(self.base_uri + "/synapses", auth=(self.username, self.password))
-            print(r.text)
+            r = requests.get(self.base_uri + "/synapses",
+                             auth=(self.username, self.password))
+            if r.status_code == 401:
+                sys.stderr.write("Unauthorized to read details about the synapses\n")
+                return 1
+            elif r.status_code == 404:
+                sys.stderr.write("No synapses found\n")
+                return 1
+            elif r.status_code == 200:
+                print(r.text)
+                return 0
+            else:
+                sys.stderr.write("Unkown HTTP error: " + str(r.status_code) + "\n")
+                return 1
         except requests.exceptions.ConnectionError:
              sys.stderr.write("Unable to connect to server\n")
+             return 1
 
     # GET /synapses/<synapse_name>
     def get_synapse(self, args):
 
         try:
-            r = requests.get(self.base_uri + "/synapses" + "/" + args.synapse_name, auth=(self.username, self.password))
-            if r.status_code == 404:
-                 sys.stderr.write("Synapse " + args.synapse_name + " not found\n")
-            else:
+            r = requests.get(self.base_uri + "/synapses" + "/" + args.synapse_name,
+                             auth=(self.username, self.password))
+            if r.status_code == 401:
+                sys.stderr.write("Unauthorized to read details about the synapse" + args.synapse_name + "\n")
+                return 1
+            elif r.status_code == 404:
+                sys.stderr.write("Synapse " + args.synapse_name + " not found\n")
+                return 1
+            elif r.status_code == 200:
                 print(r.text)
+                return 0
+            else:
+                sys.stderr.write("Unkown HTTP error: " + str(r.status_code) + "\n")
+                return 1
         except requests.exceptions.ConnectionError:
              sys.stderr.write("Unable to connect to server\n")
+             return 1
 
     # POST /synapses/start/id/<synapse_name>
     def execute_by_name(self, args):
@@ -167,19 +206,24 @@ class Kr():
         try:
             self._perform_voice_output(args)
             payload = {'no_voice': self.no_voice}
-            print(self.no_voice)
             r = requests.post(self.base_uri + "/synapses/start/id" + "/" + args.synapse_name,
                               json=payload,
                               auth=(self.username, self.password))
-            if r.status_code == 404:
-                sys.stderr.write("Unable to run " + args.synapse_name + ". Not found\n")
-            elif r.status_code == 401:
+            if r.status_code == 401:
                 sys.stderr.write("Unauthorized to run synapse " + args.synapse_name + "\n")
-            else:
-                # Assume status_code being 200
+                return 1
+            elif r.status_code == 404:
+                sys.stderr.write("Unable to run " + args.synapse_name + ". Not found\n")
+                return 1
+            elif r.status_code == 201:
                 print(r.text)
+                return 0
+            else:
+                sys.stderr.write("Unkown HTTP error: " + str(r.status_code) + "\n")
+                return 1
         except requests.exceptions.ConnectionError:
              sys.stderr.write("Unable to connect to server\n")
+             return 1
 
     # POST /synapses/start/order
     def execute_by_order(self, args):
@@ -190,46 +234,82 @@ class Kr():
             r = requests.post(self.base_uri + "/synapses/start/order",
                              json=payload,
                              auth=(self.username, self.password))
-            if r.status_code == 404:
+            if r.status_code == 401:
+                sys.stderr.write("Unauthorized to run order " + args.order_string + "\n")
+                return 1
+            elif r.status_code == 404:
                 sys.stderr.write("Unable to run " + args.order_string + ". Not found\n")
-            elif r.status_code == 401:
-                sys.stderr.write("Unauthorized to run synapse " + args.order_string + "\n")
-            else:
-                # Assume status_code being 200
+                return 1
+            elif r.status_code == 201:
                 print(r.text)
+                return 0
+            else:
+                sys.stderr.write("Unkown HTTP error: " + str(r.status_code) + "\n")
+                return 1
         except requests.exceptions.ConnectionError:
              sys.stderr.write("Unable to connect to server\n")
+             return 1
+
+
+    #####################################################################
+    ### Execute by audio method. This requires more complex operations. #
+    #####################################################################
+
+    def _get_audio_file_mime(self, args):
+
+        mime_of_file = magic.from_file(args.audio_file, mime=True)
+        if mime_of_file not in ['audio/wav', 'audio/x-wav', 'audio/mpeg3', 'audio/x-mpeg-3']:
+            sys.stderr.write("File is not WAV or MP3\n")
+            return False
+        args.mime_of_file = mime_of_file
+        return True
+
+    def _build_audio_file_payloads(self,args):
+
+        # The audio file will be sent in binary mode, along with the mime type.
+        files = {'file': (args.audio_file, open(args.audio_file, 'rb'),
+                 args.mime_of_file, {'Expires': '0'})}
+        payload = {'no_voice': self.no_voice}
+
+        return [files, payload]
 
     # POST /synapses/start/audio
     # Supported file types: WAV, MP3
     def execute_by_audio(self, args):
 
         try:
-            mime_of_file = magic.from_file(args.audio_file, mime=True)
-            if mime_of_file not in ['audio/wav', 'audio/x-wav', 'audio/mpeg3', 'audio/x-mpeg-3']:
-                sys.stderr.write("File is not WAV or MP3\n")
-            else:
-                try:
-                    self._perform_voice_output(args)
-                    files = {'file': (args.audio_file, open(args.audio_file, 'rb'),
-                             mime_of_file, {'Expires': '0'})}
-                    payload = {'no_voice': self.no_voice}
-                    r = requests.post(self.base_uri + "/synapses/start/audio",
-                                      files=files,
-                                      data=payload,
-                                      auth=(self.username, self.password))
-                    if r.status_code == 400:
-                        sys.stderr.write("No file was sent to the server\n")
-                    else:
-                        # Assume status_code being 200
-                        print(r.text)
-                except Exception as e:
-                    sys.stderr.write(str(e) + "\n")
+            self._get_audio_file_mime(args)
+            try:
+                self._perform_voice_output(args)
+                files, payload = self._build_audio_file_payloads(args)
+                r = requests.post(self.base_uri + "/synapses/start/audio",
+                                  files=files,
+                                  data=payload,
+                                  auth=(self.username, self.password))
+                if r.status_code == 400:
+                    sys.stderr.write("No file was sent to the server\n")
+                    return 1
+                elif r.status_code == 401:
+                    sys.stderr.write("Unauthorized to run synapse " + args.synapse_name + "\n")
+                    return 1
+                elif r.status_code == 404:
+                    sys.stderr.write("Unable to run " + args.audio_file + ". No match\n")
+                    return 1
+                elif r.status_code == 201:
+                    print(r.text)
+                    return 0
+                else:
+                    sys.stderr.write("Unkown HTTP error: " + str(r.status_code) + "\n")
+                    return 1
+            except Exception as e:
+                sys.stderr.write(str(e) + "\n")
+                return 1
         except FileNotFoundError:
-            sys.stderr.write("File not found\n")
+            sys.stderr.write("File " + args.audio_file + " not found\n")
+            return 1
 
 if __name__ == '__main__':
 
     kr = Kr()
     args = kr.parser.parse_args()
-    args.func(args)
+    sys.exit(args.func(args))
