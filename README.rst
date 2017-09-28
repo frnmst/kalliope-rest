@@ -1,41 +1,45 @@
-# kalliope-rest
+=============
+kalliope-rest
+=============
 
 A frontend for the Kalliope REST API
 
-## REST API
+REST API
+========
 
 See https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md
 
 To be able to run synapses, you need to enable `CORS requests`. See 
 https://github.com/kalliope-project/kalliope/blob/master/Docs/settings.md#rest-api
 
-## Help
+Help
+====
 
-```
-usage: kalrest.py [-h] {kv,sps,sp,exec} ...
+    usage: kalrest.py [-h] {kv,sps,sp,exec} ...
 
-Kalliope REST API frontend
+    Kalliope REST API frontend
 
-positional arguments:
-  {kv,sps,sp,exec}
-    kv              Get the version of Kalliope
-    sps             Get all the synapses
-    sp              Get the selected synapse
-    exec            Execute a synapse by different criterias
+    positional arguments:
+      {kv,sps,sp,exec}
+        kv              Get the version of Kalliope
+        sps             Get all the synapses
+        sp              Get the selected synapse
+        exec            Execute a synapse by different criterias
 
-optional arguments:
-  -h, --help        show this help message and exit
+    optional arguments:
+      -h, --help        show this help message and exit
 
-Return values: 0 OK, 1 Error
-```
+    Return values: 0 OK, 1 Error
 
-## Dependencies
+Dependencies
+============
 
 - Python 3.x
 - [Requests](https://github.com/requests/requests/)
 - [python-magic](https://github.com/ahupp/python-magic)
 
-## TODO
+TODO
+====
 
 - Ability to pass paramters to the exec by name subcommand
 - Handle all possible exceptions
@@ -43,7 +47,8 @@ Return values: 0 OK, 1 Error
 - Documentation
 - PyPi package
 
-## Copyright and License
+Copyright and License
+=====================
 
 Copyright (c) 2017, Franco Masotti
 
