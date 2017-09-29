@@ -28,22 +28,39 @@ import argparse
 import configparser
 import os
 import sys
-
-CONFIGURATION_FILE = "kalrest.conf"
+import appdirs
+import pkg_resources
+from shutil import copyfile
 
 class Kr():
 
     def __init__(self):
 
+        self.host = ''
+        self.port = ''
+        self.username = ''
+        self.password = ''
         self.parser = self._create_parser()
         self.configuration = self._parse_configuration()
         self.base_uri = 'http://' + self.host + ":" + self.port
+
+    def _create_user_config(self,cfg_file):
+
+        # Create the user's configuration file.
+        source = pkg_resources.resource_filename(__name__, 'kalliope_rest.conf.dist')
+        copyfile(source,cfg_file)
 
     def _parse_configuration(self):
 
         config = configparser.ConfigParser(os.environ, interpolation = configparser.BasicInterpolation())
         try:
-            config.read(CONFIGURATION_FILE)
+            cfg_dir = appdirs.user_config_dir('kalliope_rest')
+            cfg_file = os.path.join(cfg_dir, 'kalliope_rest.conf')
+            if not os.path.exists(cfg_dir):
+                os.makedirs(cfg_dir)
+            if not os.path.isfile(cfg_file):
+                self._create_user_config(cfg_file)
+            config.read(cfg_file)
 
             # These variables are visible to the rest of the class.
             self.host = config.get('Network',
@@ -308,8 +325,12 @@ class Kr():
             sys.stderr.write("File " + args.audio_file + " not found\n")
             return 1
 
-if __name__ == '__main__':
+def main(args=None):
 
     kr = Kr()
     args = kr.parser.parse_args()
     sys.exit(args.func(args))
+
+if __name__ == '__main__':
+
+    main()
