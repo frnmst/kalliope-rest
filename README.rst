@@ -12,10 +12,24 @@ See https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md
 To be able to run synapses, you need to enable `CORS requests`. See 
 https://github.com/kalliope-project/kalliope/blob/master/Docs/settings.md#rest-api
 
+Installation
+============
+
+    # python setup.py install
+
+Configuration File
+==================
+
+You will find the configuration file under
+
+    ~/.config/kalliope_rest/kalliope_rest.conf
+
+upon the first run of the script.
+
 Help
 ====
 
-    usage: kalrest.py [-h] {kv,sps,sp,exec} ...
+    usage: kalliope_rest [-h] {kv,sps,sp,exec} ...
 
     Kalliope REST API frontend
 
@@ -45,7 +59,7 @@ TODO
 - Handle all possible exceptions
 - Unit tests
 - Documentation
-- PyPi package
+- PyPi package (in progress)
 
 Copyright and License
 =====================
