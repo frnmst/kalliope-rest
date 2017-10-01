@@ -55,9 +55,10 @@ Dependencies
 TODO
 ====
 
+- Instead of handling all http errors 1 by 1, use a try catch 
 - Ability to pass paramters to the exec by name subcommand
 - Handle all possible exceptions
-- Unit tests
+- Unit tests (in progress)
 - Documentation
 - PyPi package (in progress)
 
