@@ -34,6 +34,16 @@ import json
 from shutil import copyfile
 
 
+class AudioFileFormatError(Exception):
+
+    """ Raise an exception if the provided audio file is not conforming
+        to the following format specifications (mime types):
+        'audio/wav',
+        'audio/x-wav',
+        'audio/mpeg3',
+        'audio/x-mpeg-3'
+    """
+
 class Kr():
 
     def __init__(self):
@@ -218,14 +228,13 @@ class Kr():
     ### Execute by audio method. This requires more complex operations. #
     #####################################################################
 
-    def _get_audio_file_mime(self, args):
+    def _get_audio_file_mime(self,args):
 
-        mime_of_file = magic.from_file(args.audio_file, mime=True)
-        if mime_of_file not in ['audio/wav', 'audio/x-wav', 'audio/mpeg3', 'audio/x-mpeg-3']:
-            sys.stderr.write("File is not WAV or MP3\n")
-            return False
-        args.mime_of_file = mime_of_file
-        return True
+        if not os.path.isfile(args.audio_file):
+            raise FileNotFoundError
+        args.mime_of_file = magic.from_file(args.audio_file, mime=True)
+        if args.mime_of_file not in ['audio/wav', 'audio/x-wav', 'audio/mpeg3', 'audio/x-mpeg-3']:
+            raise AudioFileFormatError("Provided audio file is not conforming to the format specifications")
 
     def _build_audio_file_payloads(self,args):
 
@@ -241,16 +250,20 @@ class Kr():
     def execute_by_audio(self, args):
 
         try:
-            self._get_audio_file_mime(args)
             self._perform_voice_output(args)
+            self._get_audio_file_mime(args)
             files, payload = self._build_audio_file_payloads(args)
             return self._abstract_http_method(
                    requests.post(self.base_uri + "/synapses/start/audio",
                                  files=files,
                                  data=payload,
                                  auth=(self.username, self.password)))
-        except FileNotFoundError:
+        except (IOError, FileNotFoundError):
             sys.stderr.write("File " + args.audio_file + " not found\n")
+            return 1
+        except AudioFileFormatError as e:
+            sys.stderr.write(str(e) + "\n")
+            sys.stderr.write("Only WAV or MP3 files are compatible\n")
             return 1
 
 

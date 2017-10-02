@@ -51,16 +51,19 @@ Dependencies
 - Python 3.x
 - [Requests](https://github.com/requests/requests/)
 - [python-magic](https://github.com/ahupp/python-magic)
+- [requests-mock](https://requests-mock.readthedocs.io/en/latest/), for the unit tests
 
 TODO
 ====
 
-- Instead of handling all http errors 1 by 1, use a try catch 
-- Ability to pass paramters to the exec by name subcommand
-- Handle all possible exceptions
-- Unit tests (in progress)
 - Documentation
+- Ability to pass paramters to the exec by name subcommand
+- Ability to pass paramters as files (see 
+  https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md#run-a-synapse-from-an-order specifically the accent-quotes example)
+- Handle all possible exceptions (in progress)
+- Unit tests (in progress)
 - PyPi package (in progress)
+- Is there a possibility to encrypt this API?
 
 Copyright and License
 =====================
