@@ -49,8 +49,13 @@ Dependencies
 ============
 
 - Python 3.x
-- .. _Requests: https://github.com/requests/requests/
-- .. _python-magic: https://github.com/ahupp/python-magic
+- Requests_
+- python-magic_
+
+
+.. _Requests: https://github.com/requests/requests/
+
+.. _python-magic: https://github.com/ahupp/python-magic
 
 Testing
 -------
