@@ -49,9 +49,14 @@ Dependencies
 ============
 
 - Python 3.x
-- [Requests](https://github.com/requests/requests/)
-- [python-magic](https://github.com/ahupp/python-magic)
-- [requests-mock](https://requests-mock.readthedocs.io/en/latest/), for the unit tests
+- .. _Requests: https://github.com/requests/requests/
+- .. _python-magic: https://github.com/ahupp/python-magic
+
+Testing
+-------
+
+- .. _requests-mock: https://requests-mock.readthedocs.io/en/latest/
+  , for the unit tests
 
 TODO
 ====
