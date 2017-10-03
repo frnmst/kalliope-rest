@@ -57,11 +57,13 @@ Dependencies
 
 .. _python-magic: https://github.com/ahupp/python-magic
 
-Testing
--------
+Testing dependencies
+--------------------
+
+- requests-mock_ for the unit tests
+
 
 - .. _requests-mock: https://requests-mock.readthedocs.io/en/latest/
-  , for the unit tests
 
 TODO
 ====
@@ -70,7 +72,6 @@ TODO
 - Ability to pass paramters to the exec by name subcommand
 - Ability to pass paramters as files (see 
   https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md#run-a-synapse-from-an-order specifically the accent-quotes example)
-- Handle all possible exceptions (in progress)
 - Unit tests (in progress)
 - PyPi package (in progress)
 - Is there a possibility to encrypt this API?
