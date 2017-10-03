@@ -33,7 +33,6 @@ import pkg_resources
 import json
 from shutil import copyfile
 
-
 class AudioFileFormatError(Exception):
 
     """ Raise an exception if the provided audio file is not conforming
@@ -44,6 +43,7 @@ class AudioFileFormatError(Exception):
         'audio/x-mpeg-3'
     """
 
+
 class Kr():
 
     def __init__(self):
@@ -52,6 +52,7 @@ class Kr():
         self.port = ''
         self.username = ''
         self.password = ''
+
         self.parser = self._create_parser()
         self.configuration = self._parse_configuration()
         self.base_uri = 'http://' + self.host + ":" + self.port
@@ -150,6 +151,9 @@ class Kr():
         execute_by_audio_prs.add_argument('-v','--voice',
                                           help="output the audio",
                                           action="store_true")
+
+        parser.add_argument('-v', '--version', action='version',
+                            version=pkg_resources.get_distribution('kalliope_rest').version)
 
         return parser
 

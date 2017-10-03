@@ -29,7 +29,7 @@ upon the first run of the script.
 Help
 ====
 
-    usage: kalliope_rest [-h] {kv,sps,sp,exec} ...
+    usage: kalliope_rest [-h] [-v] {kv,sps,sp,exec} ...
 
     Kalliope REST API frontend
 
@@ -42,8 +42,10 @@ Help
 
     optional arguments:
       -h, --help        show this help message and exit
+      -v, --version     show program's version number and exit
 
-    Return values: 0 OK, 1 Error
+    Return values: 0 OK, 1 API Error, 2 Invalid command
+
 
 Dependencies
 ============
@@ -63,7 +65,7 @@ Testing dependencies
 - requests-mock_ for the unit tests
 
 
-- .. _requests-mock: https://requests-mock.readthedocs.io/en/latest/
+.. _requests-mock: https://requests-mock.readthedocs.io/en/latest/
 
 TODO
 ====
