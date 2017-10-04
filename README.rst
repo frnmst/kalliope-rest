@@ -183,10 +183,12 @@ TODO
 ====
 
 - Unit tests (in progress)
-- Add the new mute command
-- Ability to pass paramters to the exec by name subcommand
-- Ability to pass paramters as files (see 
-  https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md#run-a-synapse-from-an-order specifically the accent-quotes example)
+  - Add unit tests for the requests.exceptions.ConnectionError exception.
+- New commands
+    - New mute command
+    - Ability to pass paramters to the exec by name subcommand
+    - Ability to pass paramters as files (see 
+      https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md#run-a-synapse-from-an-order specifically the accent-quotes example)
 - PyPi package (in progress)
 - Is there a possibility to encrypt this API?
 
