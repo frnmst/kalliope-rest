@@ -33,6 +33,7 @@ Examples
 ========
 
     $ kalliope_rest exec by-order "hello"
+
     {
         "matched_synapses": [
             {
@@ -49,7 +50,9 @@ Examples
         "status": "complete",
         "user_order": null
     }
+
     $ kalliope-rest exec by-audio "hello-command.wav" --voice
+
     {
         "matched_synapses": [
         {
@@ -172,7 +175,7 @@ Testing dependencies
 
 .. _requests-mock: https://requests-mock.readthedocs.io/en/latest/
 
--- _pyfakefs: http://pyfakefs.org
+.. _pyfakefs: http://pyfakefs.org
 
 Running the tests
 =================
