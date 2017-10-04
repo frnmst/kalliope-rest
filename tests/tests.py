@@ -26,7 +26,6 @@
 # The valid http texts have been taken from
 # https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md
 
-from unittest.mock import patch, mock_open, MagicMock
 import unittest
 import requests_mock
 import json
@@ -34,6 +33,10 @@ import wave
 import random
 import struct
 import magic
+import pyfakefs
+#from pyfakefs import fake_filesystem_unittest
+from pyfakefs.fake_filesystem_unittest import Patcher
+from sys import stdout, stderr
 from kalliope_rest import Kr
 
 
@@ -50,12 +53,13 @@ class FakeArgs():
         self.order_string = ''
         self.audio_file = ''
 
-class TestRestApi(unittest.TestCase):
+class TestRestApi(pyfakefs.fake_filesystem_unittest.TestCase):
 
     def setUp(self):
 
         self.kr = Kr()
         self.args = FakeArgs()
+        self.setUpPyfakefs()
 
     @requests_mock.mock()
     def test_get_kalliope_version(self,m):
@@ -276,7 +280,7 @@ class TestRestApi(unittest.TestCase):
 
         noise_output.close()
 
-    # I need to find a module like wave, but for mp3.
+    ## TODO I need to find a module like wave, but for mp3.
     def _generate_fake_mp3(self):
 
         pass
@@ -288,8 +292,7 @@ class TestRestApi(unittest.TestCase):
         fake_file.close()
 
     @requests_mock.mock()
-#    @patch('builtins.open', new_callable=mock_open)
-    def test_execute_by_audio(self,req_mock): #,opn_mock):
+    def test_execute_by_audio(self,m):
 
         # This will be interesting: we need to create fake files which will
         # have headers for wav, mp3 or a generic file.
@@ -298,7 +301,13 @@ class TestRestApi(unittest.TestCase):
         # should return 1. We also need to trat the case of a non-existing
         # file.
 
+        pass
+
+        '''
         uri = self.kr.base_uri + "/synapses/start/audio"
+
+        self.fs.CreateFile('noise.wav')
+        self.fs.CreateFile('no_noise.wav')
 
         # Assert 201 with a valid wav file
         self.args.audio_file = 'noise.wav'
@@ -307,7 +316,7 @@ class TestRestApi(unittest.TestCase):
         self.args.voice = False
         payload = {"matched_synapses":[{"matched_order":"Bonjour","neuron_module_list":[{"generated_message":"Bonjourmonsieur","neuron_name":"Say"}],"synapse_name":"say-hello-fr"}],"status":"complete","user_order":"bonjour"}
         json_payload = json.dumps(payload, sort_keys=True, indent=4)
-        req_mock.post(uri,
+        m.post(uri,
               status_code = 201,
               text=json_payload)
         self.assertEqual(self.kr.execute_by_audio(self.args),0)
@@ -320,18 +329,110 @@ class TestRestApi(unittest.TestCase):
         self.args.audio_file = 'no_noise.wav'
         self._generate_fake_non_mp3_wma()
         self.assertEqual(self.kr.execute_by_audio(self.args),1)
+        '''
 
 
-'''
 class TestArgumentParser(unittest.TestCase):
 
-    pass
+    def setUp(self):
+
+        self.parser = Kr()._create_parser()
+
+    # If the Sys exit exception is not handled, these unit tests would fail.
+    def _handle_exit_code_exception(self,parameter_list):
+
+        with self.assertRaises(SystemExit) as cm:
+            parsed = self.parser.parse_args(parameter_list)
+        return cm.exception.code
+
+    def test_help(self):
+
+        self.assertEqual(self._handle_exit_code_exception(['--help']), 0)
+        self.assertEqual(self._handle_exit_code_exception(['-h']), 0)
+
+    def test_version(self):
+
+        self.assertEqual(self._handle_exit_code_exception(['--version']), 0)
+        self.assertEqual(self._handle_exit_code_exception(['-v']), 0)
+
+    def test_kv(self):
+
+        self.assertEqual(
+            str(
+                self.parser.parse_args(['kv']).func.__name__),
+            Kr.get_kalliope_version.__name__)
+
+    def test_sps(self):
+
+        self.assertEqual(
+            str(
+                self.parser.parse_args(['sps']).func.__name__),
+            Kr.get_synapses.__name__)
+
+    def test_sp(self):
+
+        # Assert that it works with an argument
+        self.assertEqual(
+            str(
+                self.parser.parse_args(['sp', 'fake_synapse_name']).func.__name__),
+            Kr.get_synapse.__name__)
+
+        # Assert that it fails without passing the synapse name.
+        self.assertNotEqual(self._handle_exit_code_exception(['sp']), 0)
+
+        # Assert that it fails with a non required argument.
+        self.assertNotEqual(
+            self._handle_exit_code_exception(['sp',
+                                              'fake_synapse_name',
+                                              'non required argument']),0)
+
+    def test_exec(self):
+
+        # Assert that it fails without passing the type of order.
+        self.assertNotEqual(self._handle_exit_code_exception(['exec']), 0)
+
+        # by-name
+        self.assertEqual(
+            str(
+                self.parser.parse_args(['exec', 'by-name',
+                                        'hello']).func.__name__),
+            Kr.execute_by_name.__name__)
+        self.assertNotEqual(self._handle_exit_code_exception(['exec', 'by-name']), 0)
+        self.assertNotEqual(self._handle_exit_code_exception(['exec',
+                                                              'by-name',
+                                                              'hello',
+                                                              'non required argument']), 0)
+
+        # by-order
+        self.assertEqual(
+            str(
+                self.parser.parse_args(['exec', 'by-order',
+                                        'hello']).func.__name__),
+            Kr.execute_by_order.__name__)
+        self.assertNotEqual(self._handle_exit_code_exception(['exec', 'by-order']), 0)
+        self.assertNotEqual(self._handle_exit_code_exception(['exec',
+                                                              'by-order',
+                                                              'hello',
+                                                              'non required argument']), 0)
+
+        # by-audio
+        self.assertEqual(
+            str(
+                self.parser.parse_args(['exec', 'by-audio',
+                                        'hello.wav']).func.__name__),
+            Kr.execute_by_audio.__name__)
+        self.assertNotEqual(self._handle_exit_code_exception(['exec', 'by-audio']), 0)
+        self.assertNotEqual(self._handle_exit_code_exception(['exec',
+                                                              'by-audio',
+                                                              'hello.wav',
+                                                              'non required argument']), 0)
 
 
+# TODO
 class TestConfiguratorParser(unittest.TestCase):
 
     pass
-'''
+
 
 if __name__ == '__main__':
 

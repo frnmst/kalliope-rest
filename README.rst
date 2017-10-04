@@ -4,12 +4,15 @@ kalliope-rest
 
 A frontend for the Kalliope REST API
 
+Note: This readme will serve as the program's documentation.
+
 REST API
 ========
 
 See https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md
 
-To be able to run synapses, you need to enable `CORS requests`. See 
+To be able to run synapses, you need to enable `CORS requests` in your 
+Kalliope configuration file. See 
 https://github.com/kalliope-project/kalliope/blob/master/Docs/settings.md#rest-api
 
 Installation
@@ -26,8 +29,49 @@ You will find the configuration file under
 
 upon the first run of the script.
 
+Examples
+========
+
+    $ kalliope_rest exec by-order "hello"
+    {
+        "matched_synapses": [
+            {
+                "matched_order": null,
+                "neuron_module_list": [
+                    {
+                        "generated_message": "Bonjourmonsieur",
+                        "neuron_name": "Say"
+                    }
+                ],
+                "synapse_name": "say-hello-fr"
+            }
+        ],
+        "status": "complete",
+        "user_order": null
+    }
+    $ kalliope-rest exec by-audio "hello-command.wav" --voice
+    {
+        "matched_synapses": [
+        {
+          "matched_order": "Bonjour",
+          "neuron_module_list": [
+            {
+              "generated_message": "Bonjour monsieur",
+              "neuron_name": "Say"
+            }
+          ],
+          "synapse_name": "say-hello-fr"
+        }
+      ],
+      "status": "complete",
+      "user_order": "bonjour"
+    }
+
 Help
 ====
+
+Main help
+---------
 
     usage: kalliope_rest [-h] [-v] {kv,sps,sp,exec} ...
 
@@ -46,6 +90,66 @@ Help
 
     Return values: 0 OK, 1 API Error, 2 Invalid command
 
+sp sub-command help
+-------------------
+
+    usage: kalliope_rest sp [-h] SYNAPSE_NAME
+
+    positional arguments:
+      SYNAPSE_NAME  the synapse name
+
+    optional arguments:
+      -h, --help    show this help message and exit
+
+exec sub-command help
+---------------------
+
+    usage: kalliope_rest exec [-h] {by-name,by-order,by-audio} ...
+
+    positional arguments:
+      {by-name,by-order,by-audio}
+
+    optional arguments:
+      -h, --help            show this help message and exit
+
+exec by-order sub-command help
+------------------------------
+
+    usage: kalliope_rest exec by-order [-h] [-v] ORDER_STRING
+
+    positional arguments:
+  ORDER_STRING  a textual version of the vocal order
+
+    optional arguments:
+      -h, --help    show this help message and exit
+      -v, --voice   output the audio
+
+exec by-name sub-command help
+-----------------------------
+
+    usage: kalliope_rest exec by-name [-h] [-v] [-p PARAMETER_LIST] SYNAPSE_NAME
+
+    positional arguments:
+      SYNAPSE_NAME          the synapse name
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -v, --voice           output the audio
+      -p PARAMETER_LIST, --parameters PARAMETER_LIST
+                            pass parameters to the synapse
+
+exec by-audio sub-command help
+------------------------------
+
+    usage: kalliope_rest exec by-audio [-h] [-v] FILE_NAME
+
+    positional arguments:
+      FILE_NAME    an audio file containing the vocal order
+
+    optional arguments:
+      -h, --help   show this help message and exit
+      -v, --voice  output the audio
+
 
 Dependencies
 ============
@@ -62,26 +166,34 @@ Dependencies
 Testing dependencies
 --------------------
 
-- requests-mock_ for the unit tests
+- requests-mock_
+- pyfakefs_
 
 
 .. _requests-mock: https://requests-mock.readthedocs.io/en/latest/
 
+-- _pyfakefs: http://pyfakefs.org
+
+Running the tests
+=================
+
+    $ python setup.py test
+
 TODO
 ====
 
-- Documentation
+- Unit tests (in progress)
+- Add the new mute command
 - Ability to pass paramters to the exec by name subcommand
 - Ability to pass paramters as files (see 
   https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md#run-a-synapse-from-an-order specifically the accent-quotes example)
-- Unit tests (in progress)
 - PyPi package (in progress)
 - Is there a possibility to encrypt this API?
 
 Copyright and License
 =====================
 
-Copyright (c) 2017, Franco Masotti
+Copyright (c) 2017, Franco Masotti <franco.masotti@student.inife.it>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy 
 of this software and associated documentation files (the "Software"), to deal 
