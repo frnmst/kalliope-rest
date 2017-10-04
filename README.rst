@@ -18,6 +18,8 @@ https://github.com/kalliope-project/kalliope/blob/master/Docs/settings.md#rest-a
 Installation
 ============
 
+::
+
     # python setup.py install
 
 Configuration File
@@ -25,12 +27,16 @@ Configuration File
 
 You will find the configuration file under
 
+::
+
     ~/.config/kalliope_rest/kalliope_rest.conf
 
 upon the first run of the script.
 
 Examples
 ========
+
+::
 
     $ kalliope_rest exec by-order "hello"
 
@@ -69,6 +75,7 @@ Examples
       "status": "complete",
       "user_order": "bonjour"
     }
+
 
 Help
 ====
@@ -121,7 +128,7 @@ exec by-order sub-command help
     usage: kalliope_rest exec by-order [-h] [-v] ORDER_STRING
 
     positional arguments:
-  ORDER_STRING  a textual version of the vocal order
+      ORDER_STRING  a textual version of the vocal order
 
     optional arguments:
       -h, --help    show this help message and exit
@@ -179,6 +186,8 @@ Testing dependencies
 
 Running the tests
 =================
+
+::
 
     $ python setup.py test
 
