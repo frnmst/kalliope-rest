@@ -9,11 +9,13 @@ Note: This readme will serve as the program's documentation.
 REST API
 ========
 
-See https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md
+To be able to run synapses using the API_, you need to enable `CORS requests` in your 
+Kalliope configuration_ file. 
 
-To be able to run synapses, you need to enable `CORS requests` in your 
-Kalliope configuration file. See 
-https://github.com/kalliope-project/kalliope/blob/master/Docs/settings.md#rest-api
+
+.. _API: https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md
+
+.. _configuration: https://github.com/kalliope-project/kalliope/blob/master/Docs/settings.md#rest-api
 
 Installation
 ============
@@ -31,7 +33,19 @@ You will find the configuration file under
 
     ~/.config/kalliope_rest/kalliope_rest.conf
 
-upon the first run of the script.
+upon the first run of the script. What follows is
+an example of configuration file which is included in
+this repository
+
+::
+
+    [Network]
+    Host = 127.0.0.1
+    Port = 5000
+      
+    [Administration]
+    Username = admin
+    Password = secret
 
 Examples
 ========
