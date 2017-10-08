@@ -187,8 +187,7 @@ class TestRestApi(pyfakefs.fake_filesystem_unittest.TestCase):
             json_payload,
             lambda: self.kr.execute_by_name(self.args))
 
-    @requests_mock.mock()
-    def test_execute_by_order(self,m):
+    def test_execute_by_order(self):
 
         uri = self.kr.base_uri + "/synapses/start/order"
         self.args.order_string = 'Bonjour'
