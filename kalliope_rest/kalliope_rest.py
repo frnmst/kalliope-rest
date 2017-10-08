@@ -163,14 +163,10 @@ class Kr():
         else:
             self.no_voice = 'true'
 
-    def _abstract_http_method(self, r):
+    def _abstract_http_method(self, requests_method):
 
         try:
-            # data = r.json()
-            # print(data[u'Kalliope version'])
-
-            # Without the following instruction, this method could not exist
-            r.raise_for_status()
+            r = requests_method()
             json.loads(r.text)
             print(r.text)
             return 0
@@ -180,6 +176,9 @@ class Kr():
             sys.stderr.write(str(e) + "\n")
             return 1
         except requests.exceptions.HTTPError as e:
+            sys.stderr.write(str(e) + "\n")
+            return 1
+        except requests.exceptions.ConnectionError as e:
             sys.stderr.write(str(e) + "\n")
             return 1
 
@@ -192,63 +191,40 @@ class Kr():
     # GET /
     def get_kalliope_version(self, args):
 
-        try:
-            return self._abstract_http_method(requests.get(self.base_uri + "/",
+        return self._abstract_http_method(lambda: requests.get(self.base_uri + "/",
                                               auth=(self.username, self.password)))
-        except requests.exceptions.ConnectionError as e:
-            sys.stderr.write(str(e) + "\n")
-            return 1
-
     # GET /synapses
     def get_synapses(self, args):
 
-        try:
-            return self._abstract_http_method(requests.get(self.base_uri + "/synapses",
+        return self._abstract_http_method(lambda: requests.get(self.base_uri + "/synapses",
                                               auth=(self.username, self.password)))
-        except requests.exceptions.ConnectionError as e:
-            sys.stderr.write(str(e) + "\n")
-            return 1
 
     # GET /synapses/<synapse_name>
     def get_synapse(self, args):
 
-        try:
-            return self._abstract_http_method(
-               requests.get(self.base_uri + "/synapses" + "/" + args.synapse_name,
-                            auth=(self.username, self.password)))
-        except requests.exceptions.ConnectionError as e:
-            sys.stderr.write(str(e) + "\n")
-            return 1
+        return self._abstract_http_method(lambda:
+           requests.get(self.base_uri + "/synapses" + "/" + args.synapse_name,
+                        auth=(self.username, self.password)))
 
     # POST /synapses/start/id/<synapse_name>
     def execute_by_name(self, args):
 
-        try:
-            self._perform_voice_output(args)
-            payload = {'no_voice': self.no_voice}
-            return self._abstract_http_method(
-                   requests.post(self.base_uri + "/synapses/start/id" + "/" + args.synapse_name,
+        self._perform_voice_output(args)
+        payload = {'no_voice': self.no_voice}
+        return self._abstract_http_method(lambda:
+               requests.post(self.base_uri + "/synapses/start/id" + "/" + args.synapse_name,
                                  json=payload,
                                  auth=(self.username, self.password)))
-        except requests.exceptions.ConnectionError as e:
-            sys.stderr.write(str(e) + "\n")
-            return 1
-
 
     # POST /synapses/start/order
     def execute_by_order(self, args):
 
-        try:
-            self._perform_voice_output(args)
-            payload = {'order': args.order_string, 'no_voice': self.no_voice}
-            return self._abstract_http_method(
-                   requests.post(self.base_uri + "/synapses/start/order",
-                                 json=payload,
-                                 auth=(self.username, self.password)))
-        except requests.exceptions.ConnectionError as e:
-            sys.stderr.write(str(e) + "\n")
-            return 1
-
+        self._perform_voice_output(args)
+        payload = {'order': args.order_string, 'no_voice': self.no_voice}
+        return self._abstract_http_method(lambda:
+               requests.post(self.base_uri + "/synapses/start/order",
+                             json=payload,
+                             auth=(self.username, self.password)))
 
     #####################################################################
     ### Execute by audio method. This requires more complex operations. #
@@ -276,18 +252,14 @@ class Kr():
     def execute_by_audio(self, args):
 
         try:
-            try:
-                self._perform_voice_output(args)
-                self._get_audio_file_mime(args)
-                files, payload = self._build_audio_file_payloads(args)
-                return self._abstract_http_method(
-                       requests.post(self.base_uri + "/synapses/start/audio",
-                                     files=files,
-                                     data=payload,
-                                     auth=(self.username, self.password)))
-            except requests.exceptions.ConnectionError as e:
-                sys.stderr.write(str(e) + "\n")
-                return 1
+            self._perform_voice_output(args)
+            self._get_audio_file_mime(args)
+            files, payload = self._build_audio_file_payloads(args)
+            return self._abstract_http_method(lambda:
+                   requests.post(self.base_uri + "/synapses/start/audio",
+                                 files=files,
+                                 data=payload,
+                                 auth=(self.username, self.password)))
         except (IOError, FileNotFoundError):
             sys.stderr.write("File " + args.audio_file + " not found\n")
             return 1
