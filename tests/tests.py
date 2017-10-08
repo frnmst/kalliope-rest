@@ -26,6 +26,7 @@
 # The valid http texts have been taken from
 # https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md
 
+import requests
 import unittest
 import requests_mock
 import json
@@ -62,205 +63,141 @@ class TestRestApi(pyfakefs.fake_filesystem_unittest.TestCase):
         self.setUpPyfakefs()
 
     @requests_mock.mock()
-    def test_get_kalliope_version(self,m):
-
-        uri = self.kr.base_uri + "/"
+    def _abstract_requests_get_test(self,uri,json_payload,api_function,m):
 
         # Assert 200 with a valid http text.
-        json_payload =  json.dumps({'Kalliope version':'0.4.5'}, sort_keys=True, indent=4)
         m.get(uri,
               status_code = 200,
               text=json_payload)
-        self.assertEqual(self.kr.get_kalliope_version(self.args),0)
+        self.assertEqual(api_function(),0)
 
         # Assert 200 with an invalid http text.
         m.get(uri,
               status_code = 200,
               text='a fake 200 text')
-        self.assertEqual(self.kr.get_kalliope_version(self.args),1)
+        self.assertEqual(api_function(),1)
 
         # Assert 401.
         m.get(uri,
               status_code = 401,
               text='a fake 401 text')
-        self.assertEqual(self.kr.get_kalliope_version(self.args),1)
-
-        # Assert a generic HTTP error.
-        m.get(uri,
-              status_code = 500,
-              text='a fake 500 text')
-        self.assertEqual(self.kr.get_kalliope_version(self.args),1)
-
-    @requests_mock.mock()
-    def test_get_synapses(self,m):
-
-        uri = self.kr.base_uri + "/synapses"
-
-        # Assert 200 with a valid http text.
-        payload = {"synapses":[[{"name":"stop-kalliope","neurons":[{"say":{"message":"Goodbye"}},"kill_switch"],"signals":[{"order":"close"}]}],[{"name":"say-hello","neurons":[{"say":{"message":["Bonjourmonsieur"]}}],"signals":[{"order":"bonjour"}]}]]}
-        json_payload = json.dumps(payload, sort_keys=True, indent=4)
-        m.get(uri,
-              status_code = 200,
-              text=json_payload)
-        self.assertEqual(self.kr.get_synapses(self.args),0)
-
-        # Assert 200 with an invalid http text.
-        m.get(uri,
-              status_code = 200,
-              text='a fake 200 text')
-        self.assertEqual(self.kr.get_synapses(self.args),1)
-
-        # Assert 401.
-        m.get(uri,
-              status_code = 401,
-              text='a fake 401 text')
-        self.assertEqual(self.kr.get_synapses(self.args),1)
+        self.assertEqual(api_function(),1)
 
         # Assert 404.
         m.get(uri,
               status_code = 404,
               text='a fake 404 text')
-        self.assertEqual(self.kr.get_synapses(self.args),1)
+        self.assertEqual(api_function(),1)
 
         # Assert a generic HTTP error.
         m.get(uri,
               status_code = 500,
               text='a fake 500 text')
-        self.assertEqual(self.kr.get_synapses(self.args),1)
+        self.assertEqual(api_function(),1)
+
+        # Simulate a connection error.
+        m.get(uri,
+              exc=requests.exceptions.ConnectionError)
+        self.assertEqual(api_function(),1)
 
     @requests_mock.mock()
-    def test_get_synapse(self,m):
+    def _abstract_requests_post_test(self,uri,json_payload,api_function,m):
+
+        self.args.voice = False
+        m.post(uri,
+              status_code = 201,
+              text=json_payload)
+        self.assertEqual(api_function(),0)
+
+        # Assert 201 with a valid order and voice enabled as parameter.
+        self.args.voice = True
+        m.post(uri,
+              status_code = 201,
+              text=json_payload)
+        self.assertEqual(api_function(),0)
+
+        # Assert 201 with an invalid http text.
+        m.post(uri,
+              status_code = 201,
+              text='a fake 201 text')
+        self.assertEqual(api_function(),1)
+
+        # Assert 401.
+        m.post(uri,
+              status_code = 401,
+              text='a fake 401 text')
+        self.assertEqual(api_function(),1)
+
+        # Assert 404.
+        m.post(uri,
+              status_code = 404,
+              text='a fake 404 text')
+        self.assertEqual(api_function(),1)
+
+        # Assert a generic HTTP error.
+        m.post(uri,
+              status_code = 500,
+              text='a fake 500 text')
+        self.assertEqual(api_function(),1)
+
+        # Simulate a connection error.
+        m.post(uri,
+              exc=requests.exceptions.ConnectionError)
+        self.assertEqual(api_function(),1)
+
+    def test_get_kalliope_version(self):
+
+        uri = self.kr.base_uri + "/"
+        json_payload =  json.dumps({'Kalliope version':'0.4.5'}, sort_keys=True, indent=4)
+        self._abstract_requests_get_test(
+            uri,
+            json_payload,
+            lambda: self.kr.get_kalliope_version(self.args))
+
+    def test_get_synapses(self):
 
         uri = self.kr.base_uri + "/synapses"
+        payload = {"synapses":[[{"name":"stop-kalliope","neurons":[{"say":{"message":"Goodbye"}},"kill_switch"],"signals":[{"order":"close"}]}],[{"name":"say-hello","neurons":[{"say":{"message":["Bonjourmonsieur"]}}],"signals":[{"order":"bonjour"}]}]]}
+        json_payload = json.dumps(payload, sort_keys=True, indent=4)
+        self._abstract_requests_get_test(
+            uri,
+            json_payload,
+            lambda: self.kr.get_synapses(self.args))
 
-        # Assert 200 with a valid synapse name.
-        uri_1 = uri + "/" + "say-hello"
+    def test_get_synapse(self):
+
+        uri = self.kr.base_uri + "/synapses" + "/" + "say-hello"
         self.args.synapse_name = 'say-hello'
         payload = {"synapses":{"name":"say-hello","neurons":[{"say":{"message":["Bonjourmonsieur"]}}],"signals":[{"order":"bonjour"}]}}
         json_payload = json.dumps(payload, sort_keys=True, indent=4)
-        m.get(uri_1,
-              status_code = 200,
-              text=json_payload)
-        self.assertEqual(self.kr.get_synapse(self.args),0)
+        self._abstract_requests_get_test(
+            uri,
+            json_payload,
+            lambda: self.kr.get_synapse(self.args))
 
-        # Assert 200 with an invalid http text.
-        m.get(uri_1,
-              status_code = 200,
-              text='a fake 200 text')
-        self.assertEqual(self.kr.get_synapse(self.args),1)
+    def test_execute_by_name(self):
 
-        # Assert 401.
-        m.get(uri_1,
-              status_code = 401,
-              text='a fake 401 text')
-        self.assertEqual(self.kr.get_synapse(self.args),1)
-
-        # Assert 404.
-        m.get(uri_1,
-              status_code = 404,
-              text='a fake 404 text')
-        self.assertEqual(self.kr.get_synapse(self.args),1)
-
-        # Assert a generic HTTP error.
-        m.get(uri_1,
-              status_code = 500,
-              text='a fake 500 text')
-        self.assertEqual(self.kr.get_synapse(self.args),1)
-
-    @requests_mock.mock()
-    def test_execute_by_name(self,m):
-
-        uri = self.kr.base_uri + "/synapses/start/id"
-
-        # Assert 201 with a valid order
-        uri_1 = uri + "/" + "say-hello"
+        uri = self.kr.base_uri + "/synapses/start/id" + "/" + "say-hello"
         self.args.synapse_name = 'say-hello'
-        self.args.voice = False
         # None is encoded as null in the json_payload.
         payload = {"matched_synapses":[{"matched_order":None,"neuron_module_list":[{"generated_message":"Bonjourmonsieur","neuron_name":"Say"}],"synapse_name":"say-hello-fr"}],"status":"complete","user_order":None}
         json_payload = json.dumps(payload, sort_keys=True, indent=4)
-        m.post(uri_1,
-              status_code = 201,
-              text=json_payload)
-        self.assertEqual(self.kr.execute_by_name(self.args),0)
-
-        # Assert 201 with a valid order and voice enabled as parameter
-        self.args.voice = True
-        m.post(uri_1,
-              status_code = 201,
-              text=json_payload)
-        self.assertEqual(self.kr.execute_by_name(self.args),0)
-
-        # Assert 201 with an invalid http text.
-        m.post(uri_1,
-              status_code = 201,
-              text='a fake 201 text')
-        self.assertEqual(self.kr.execute_by_name(self.args),1)
-
-        # Assert 401.
-        m.post(uri_1,
-              status_code = 401,
-              text='a fake 401 text')
-        self.assertEqual(self.kr.execute_by_name(self.args),1)
-
-        # Assert 404.
-        m.post(uri_1,
-              status_code = 404,
-              text='a fake 404 text')
-        self.assertEqual(self.kr.execute_by_name(self.args),1)
-
-        # Assert a generic HTTP error.
-        m.post(uri_1,
-              status_code = 500,
-              text='a fake 500 text')
-        self.assertEqual(self.kr.execute_by_name(self.args),1)
+        self._abstract_requests_post_test(
+            uri,
+            json_payload,
+            lambda: self.kr.execute_by_name(self.args))
 
     @requests_mock.mock()
     def test_execute_by_order(self,m):
 
         uri = self.kr.base_uri + "/synapses/start/order"
-
-        # Assert 201 with a valid order
         self.args.order_string = 'Bonjour'
-        self.args.voice = False
         payload = {"matched_synapses":[{"matched_order":"Bonjour","neuron_module_list":[{"generated_message":"Bonjourmonsieur","neuron_name":"Say"}],"synapse_name":"say-hello-fr"}],"status":"complete","user_order":"bonjour"}
         json_payload = json.dumps(payload, sort_keys=True, indent=4)
-        m.post(uri,
-              status_code = 201,
-              text=json_payload)
-        self.assertEqual(self.kr.execute_by_order(self.args),0)
-
-        # Assert 201 with a valid order and voice enabled as parameter
-        self.args.voice = True
-        m.post(uri,
-              status_code = 201,
-              text=json_payload)
-        self.assertEqual(self.kr.execute_by_order(self.args),0)
-
-        # Assert 201 with an invalid http text.
-        m.post(uri,
-              status_code = 201,
-              text='a fake 201 text')
-        self.assertEqual(self.kr.execute_by_order(self.args),1)
-
-        # Assert 401.
-        m.post(uri,
-              status_code = 401,
-              text='a fake 401 text')
-        self.assertEqual(self.kr.execute_by_order(self.args),1)
-
-        # Assert 404.
-        m.post(uri,
-              status_code = 404,
-              text='a fake 404 text')
-        self.assertEqual(self.kr.execute_by_order(self.args),1)
-
-        # Assert a generic HTTP error.
-        m.post(uri,
-              status_code = 500,
-              text='a fake 500 text')
-        self.assertEqual(self.kr.execute_by_order(self.args),1)
-
+        self._abstract_requests_post_test(
+            uri,
+            json_payload,
+            lambda: self.kr.execute_by_order(self.args))
 
     ## TODO: Add mocking for io operations here ##
     ## TODO: Fix "ResourceWarning: unclosed file"

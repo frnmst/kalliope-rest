@@ -175,10 +175,7 @@ class Kr():
            # end of inspired by.
             sys.stderr.write(str(e) + "\n")
             return 1
-        except requests.exceptions.HTTPError as e:
-            sys.stderr.write(str(e) + "\n")
-            return 1
-        except requests.exceptions.ConnectionError as e:
+        except requests.exceptions.RequestException as e:
             sys.stderr.write(str(e) + "\n")
             return 1
 
