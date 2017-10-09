@@ -31,6 +31,7 @@ import sys
 import appdirs
 import pkg_resources
 import json
+import ipaddress
 from shutil import copyfile
 
 class AudioFileFormatError(Exception):
@@ -80,6 +81,16 @@ class Kr():
             self.host = config.get('Network',
                                    'Host',
                                    fallback='127.0.0.1')
+
+            # FIXME: find a way to do a "return 1" to thr main function if an
+            # exception is raised within this method.
+            # TODO: Check if self.port is an integer between 1 and <PORT MAX>
+
+            try:
+                ipaddress.ip_address(self.host)
+            except ValueError:
+                raise
+
             self.port = config.get('Network',
                                    'Port',
                                    fallback='5000')
@@ -89,9 +100,10 @@ class Kr():
             self.password = config.get('Administration',
                                        'Password',
                                        fallback='secret')
-        except Exception as e:
+        except configparser.Error as e:
             sys.stderr.write(str(e) + "\n")
-            sys.stderr.write("Problem reading the configuration file. Unable to proceed.\n")
+        except ValueError as e:
+            sys.stderr.write(str(e) + "\n")
         finally:
             return config
 

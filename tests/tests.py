@@ -103,6 +103,7 @@ class TestRestApi(pyfakefs.fake_filesystem_unittest.TestCase):
     @requests_mock.mock()
     def _abstract_requests_post_test(self,uri,json_payload,api_function,m):
 
+        # Assert 201 with a valid order and voice disabled as parameter.
         self.args.voice = False
         m.post(uri,
               status_code = 201,
@@ -365,10 +366,16 @@ class TestArgumentParser(unittest.TestCase):
 
 
 # TODO
-class TestConfiguratorParser(unittest.TestCase):
+class TestConfiguratorParser(pyfakefs.fake_filesystem_unittest.TestCase):
 
-    pass
+    def setUp(self):
 
+        self.setUpPyfakefs()
+        self.configuration = None
+
+    def test__parse_configuration(self):
+
+        self.configuration = Kr()._parse_configuration()
 
 if __name__ == '__main__':
 

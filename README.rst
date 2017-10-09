@@ -209,7 +209,6 @@ TODO
 ====
 
 - Unit tests (in progress)
-  - Add unit tests for the requests.exceptions.ConnectionError exception.
 - New commands
     - New mute command
     - Ability to pass paramters to the exec by name subcommand
