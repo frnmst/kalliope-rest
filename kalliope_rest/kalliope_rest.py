@@ -121,9 +121,10 @@ class Kr():
         subparsers = parser.add_subparsers(dest='command')
         subparsers.required = True
 
-        get_kalliope_version_prs = subparsers.add_parser('kv',help="Get the version of Kalliope")
-        get_synapses_prs = subparsers.add_parser('sps',help="Get all the synapses")
-        get_synapse_prs = subparsers.add_parser('sp',help="Get the selected synapse")
+        get_kalliope_version_prs = subparsers.add_parser('kv',help="Show the version of Kalliope")
+        get_synapses_prs = subparsers.add_parser('sps',help="Show information about all the available synapses")
+        get_synapse_prs = subparsers.add_parser('sp',help="Show information about the selected synapse")
+        get_mute_status_prs = subparsers.add_parser('ismute',help="Tell if Kalliope is waiting for orders")
         execute_synapse_group = subparsers.add_parser('exec',help="Execute a synapse by different criterias")
         egp = execute_synapse_group.add_subparsers(dest='command')
         egp.required = True
@@ -135,6 +136,7 @@ class Kr():
         get_kalliope_version_prs.set_defaults(func=self.get_kalliope_version)
         get_synapses_prs.set_defaults(func=self.get_synapses)
         get_synapse_prs.set_defaults(func=self.get_synapse)
+        get_mute_status_prs.set_defaults(func=self.get_mute_status)
         execute_by_name_prs.set_defaults(func=self.execute_by_name)
         execute_by_order_prs.set_defaults(func=self.execute_by_order)
         execute_by_audio_prs.set_defaults(func=self.execute_by_audio)
@@ -180,16 +182,25 @@ class Kr():
         try:
             r = requests_method()
             json.loads(r.text)
-            print(r.text)
-            return 0
+            result = {
+                'retcode': 0,
+                'text': r.text
+            }
+        except requests.exceptions.RequestException as e:
+            sys.stderr.write("Requests error\n")
+            sys.stderr.write(str(e) + "\n")
+            result = {
+                'retcode': 1,
+            }
             # Inspired by https://stackoverflow.com/a/20725965
         except json.decoder.JSONDecodeError as e:
            # end of inspired by.
+            sys.stderr.write("JSON decoder error\n")
             sys.stderr.write(str(e) + "\n")
-            return 1
-        except requests.exceptions.RequestException as e:
-            sys.stderr.write(str(e) + "\n")
-            return 1
+            result = {
+                'retcode': 1,
+            }
+        return result
 
     ########################
     ########################
@@ -213,6 +224,13 @@ class Kr():
 
         return self._abstract_http_method(lambda:
            requests.get(self.base_uri + "/synapses" + "/" + args.synapse_name,
+                        auth=(self.username, self.password)))
+
+    # GET /mute
+    def get_mute_status(self, args):
+
+        return self._abstract_http_method(lambda:
+           requests.get(self.base_uri + "/mute",
                         auth=(self.username, self.password)))
 
     # POST /synapses/start/id/<synapse_name>
@@ -277,6 +295,16 @@ class Kr():
             sys.stderr.write("Only WAV or MP3 files are compatible\n")
             return 1
 
+    '''
+    # POST /mute
+    def set_mute_status(self, args):
+
+        payload = {'mute': args.mute}
+        return self._abstract_http_method(lambda:
+               requests.post(self.base_uri + "/mute",
+                             json=payload,
+                             auth=(self.username, self.password)))
+    '''
 
 if __name__ == '__main__':
 

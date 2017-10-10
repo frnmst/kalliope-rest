@@ -30,7 +30,10 @@ def main(args=None):
 
     kr = Kr()
     args = kr.parser.parse_args()
-    sys.exit(args.func(args))
+    result = args.func(args)
+    if 'text' in result:
+        print(result['text'])
+    sys.exit(result['retcode'])
 
 if __name__ == '__main__':
 

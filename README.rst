@@ -22,7 +22,7 @@ Installation
 
 ::
 
-    # python setup.py install
+    # make install
 
 Configuration File
 ==================
@@ -203,14 +203,14 @@ Running the tests
 
 ::
 
-    $ python setup.py test
+    $ make
 
 TODO
 ====
 
 - Unit tests (in progress)
 - New commands
-    - New mute command
+    - New mute commands (in progress)
     - Ability to pass paramters to the exec by name subcommand
     - Ability to pass paramters as files (see 
       https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md#run-a-synapse-from-an-order specifically the accent-quotes example)

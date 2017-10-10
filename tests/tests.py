@@ -69,36 +69,36 @@ class TestRestApi(pyfakefs.fake_filesystem_unittest.TestCase):
         m.get(uri,
               status_code = 200,
               text=json_payload)
-        self.assertEqual(api_function(),0)
+        self.assertEqual(api_function()['retcode'],0)
 
         # Assert 200 with an invalid http text.
         m.get(uri,
               status_code = 200,
               text='a fake 200 text')
-        self.assertEqual(api_function(),1)
+        self.assertEqual(api_function()['retcode'],1)
 
         # Assert 401.
         m.get(uri,
               status_code = 401,
               text='a fake 401 text')
-        self.assertEqual(api_function(),1)
+        self.assertEqual(api_function()['retcode'],1)
 
         # Assert 404.
         m.get(uri,
               status_code = 404,
               text='a fake 404 text')
-        self.assertEqual(api_function(),1)
+        self.assertEqual(api_function()['retcode'],1)
 
         # Assert a generic HTTP error.
         m.get(uri,
               status_code = 500,
               text='a fake 500 text')
-        self.assertEqual(api_function(),1)
+        self.assertEqual(api_function()['retcode'],1)
 
         # Simulate a connection error.
         m.get(uri,
               exc=requests.exceptions.ConnectionError)
-        self.assertEqual(api_function(),1)
+        self.assertEqual(api_function()['retcode'],1)
 
     @requests_mock.mock()
     def _abstract_requests_post_test(self,uri,json_payload,api_function,m):
@@ -108,43 +108,43 @@ class TestRestApi(pyfakefs.fake_filesystem_unittest.TestCase):
         m.post(uri,
               status_code = 201,
               text=json_payload)
-        self.assertEqual(api_function(),0)
+        self.assertEqual(api_function()['retcode'],0)
 
         # Assert 201 with a valid order and voice enabled as parameter.
         self.args.voice = True
         m.post(uri,
               status_code = 201,
               text=json_payload)
-        self.assertEqual(api_function(),0)
+        self.assertEqual(api_function()['retcode'],0)
 
         # Assert 201 with an invalid http text.
         m.post(uri,
               status_code = 201,
               text='a fake 201 text')
-        self.assertEqual(api_function(),1)
+        self.assertEqual(api_function()['retcode'],1)
 
         # Assert 401.
         m.post(uri,
               status_code = 401,
               text='a fake 401 text')
-        self.assertEqual(api_function(),1)
+        self.assertEqual(api_function()['retcode'],1)
 
         # Assert 404.
         m.post(uri,
               status_code = 404,
               text='a fake 404 text')
-        self.assertEqual(api_function(),1)
+        self.assertEqual(api_function()['retcode'],1)
 
         # Assert a generic HTTP error.
         m.post(uri,
               status_code = 500,
               text='a fake 500 text')
-        self.assertEqual(api_function(),1)
+        self.assertEqual(api_function()['retcode'],1)
 
         # Simulate a connection error.
         m.post(uri,
               exc=requests.exceptions.ConnectionError)
-        self.assertEqual(api_function(),1)
+        self.assertEqual(api_function()['retcode'],1)
 
     def test_get_kalliope_version(self):
 
@@ -175,6 +175,16 @@ class TestRestApi(pyfakefs.fake_filesystem_unittest.TestCase):
             uri,
             json_payload,
             lambda: self.kr.get_synapse(self.args))
+
+    def test_get_mute_status(self):
+
+        uri = self.kr.base_uri + "/mute"
+        payload = {"mute":True}
+        json_payload = json.dumps(payload, sort_keys=True, indent=4)
+        self._abstract_requests_get_test(
+            uri,
+            json_payload,
+            lambda: self.kr.get_mute_status(self.args))
 
     def test_execute_by_name(self):
 
@@ -268,7 +278,6 @@ class TestRestApi(pyfakefs.fake_filesystem_unittest.TestCase):
         self.assertEqual(self.kr.execute_by_audio(self.args),1)
         '''
 
-
 class TestArgumentParser(unittest.TestCase):
 
     def setUp(self):
@@ -322,6 +331,13 @@ class TestArgumentParser(unittest.TestCase):
             self._handle_exit_code_exception(['sp',
                                               'fake_synapse_name',
                                               'non required argument']),0)
+
+    def test_ismute(self):
+
+        self.assertEqual(
+            str(
+                self.parser.parse_args(['ismute']).func.__name__),
+            Kr.get_mute_status.__name__)
 
     def test_exec(self):
 
