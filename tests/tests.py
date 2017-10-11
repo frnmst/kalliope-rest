@@ -68,36 +68,21 @@ class TestRestApi(pyfakefs.fake_filesystem_unittest.TestCase):
         m.get(uri,
               status_code = 200,
               text=json_payload)
-        self.assertEqual(api_function()['retcode'],0)
+        self.assertEqual(api_function()['text'],json_payload)
 
-        # Assert 200 with an invalid http text.
+        # Assert 200 with an invalid http text. Assert raises the json error.
         m.get(uri,
               status_code = 200,
               text='a fake 200 text')
-        self.assertEqual(api_function()['retcode'],1)
+        with self.assertRaises(json.decoder.JSONDecodeError):
+            api_function()
 
-        # Assert 401.
-        m.get(uri,
-              status_code = 401,
-              text='a fake 401 text')
-        self.assertEqual(api_function()['retcode'],1)
-
-        # Assert 404.
-        m.get(uri,
-              status_code = 404,
-              text='a fake 404 text')
-        self.assertEqual(api_function()['retcode'],1)
-
-        # Assert a generic HTTP error.
-        m.get(uri,
-              status_code = 500,
-              text='a fake 500 text')
-        self.assertEqual(api_function()['retcode'],1)
-
-        # Simulate a connection error.
+        # Simulate a connection error and assert that the connection error is
+        # raised.
         m.get(uri,
               exc=requests.exceptions.ConnectionError)
-        self.assertEqual(api_function()['retcode'],1)
+        with self.assertRaises(requests.exceptions.RequestException):
+            api_function()
 
     @requests_mock.mock()
     def _abstract_requests_post_test(self,uri,json_payload,api_function,m):
@@ -107,43 +92,28 @@ class TestRestApi(pyfakefs.fake_filesystem_unittest.TestCase):
         m.post(uri,
               status_code = 201,
               text=json_payload)
-        self.assertEqual(api_function()['retcode'],0)
+        self.assertEqual(api_function()['text'],json_payload)
 
         # Assert 201 with a valid order and voice enabled as parameter.
         self.args.voice = True
         m.post(uri,
               status_code = 201,
               text=json_payload)
-        self.assertEqual(api_function()['retcode'],0)
+        self.assertEqual(api_function()['text'],json_payload)
 
         # Assert 201 with an invalid http text.
         m.post(uri,
               status_code = 201,
               text='a fake 201 text')
-        self.assertEqual(api_function()['retcode'],1)
+        with self.assertRaises(json.decoder.JSONDecodeError):
+            api_function()
 
-        # Assert 401.
-        m.post(uri,
-              status_code = 401,
-              text='a fake 401 text')
-        self.assertEqual(api_function()['retcode'],1)
-
-        # Assert 404.
-        m.post(uri,
-              status_code = 404,
-              text='a fake 404 text')
-        self.assertEqual(api_function()['retcode'],1)
-
-        # Assert a generic HTTP error.
-        m.post(uri,
-              status_code = 500,
-              text='a fake 500 text')
-        self.assertEqual(api_function()['retcode'],1)
-
-        # Simulate a connection error.
+        # Simulate a connection error and assert that the connection error is
+        # raised.
         m.post(uri,
               exc=requests.exceptions.ConnectionError)
-        self.assertEqual(api_function()['retcode'],1)
+        with self.assertRaises(requests.exceptions.RequestException):
+            api_function()
 
     def test_get_kalliope_version(self):
 

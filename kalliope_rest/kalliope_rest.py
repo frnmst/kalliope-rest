@@ -34,12 +34,9 @@ import json
 import ipaddress
 from shutil import copyfile
 
-PORT_MIN = 1
-PORT_MAX = 65535
 
 class AudioFileFormatError(Exception):
-
-    """ Raise an exception if the provided audio file is not conforming
+    """ Raises an exception if the provided audio file is not conforming
         to the following format specifications (mime types):
         'audio/wav',
         'audio/x-wav',
@@ -47,9 +44,14 @@ class AudioFileFormatError(Exception):
         'audio/x-mpeg-3'
     """
 
-class ConfigurationParsingError(Exception):
+class AudioFileError(Exception):
+    """ Raises an exception if the audio file is not found or if there
+        is a filesystem error.
+    """
 
-    """ Pass
+class ConfigurationParsingError(Exception):
+    """ Raises an exception if the configuration file has invalid values
+        or if it is not found, or if there is a filesystem error.
     """
 
 class Kr():
@@ -79,6 +81,8 @@ class Kr():
 
     def _parse_configuration(self):
 
+        PORT_MIN = 1
+        PORT_MAX = 65535
         config = configparser.ConfigParser(os.environ, interpolation = configparser.BasicInterpolation())
         try:
             # Inspired by https://stackoverflow.com/questions/40193112/python-setuptools-distribute-configuration-files-to-os-specific-directories
@@ -90,7 +94,6 @@ class Kr():
                 self._create_user_config(cfg_file)
             # End of inspired by.
             config.read(cfg_file)
-
             self.host = config.get('Network',
                                    'Host',
                                    fallback='127.0.0.1')
@@ -103,16 +106,12 @@ class Kr():
             self.password = config.get('Administration',
                                        'Password',
                                        fallback='secret')
-
             # Check if the host variable is a valid IPv4 or IPv6 address.
             ipaddress.ip_address(self.host)
             # Check that the port variable is contained in the correct range.
             if int(self.port) < PORT_MIN or int(self.port) > PORT_MAX:
                 raise ValueError('Port number out of range')
-
         except (configparser.Error, ValueError) as e:
-            sys.stderr.write(str(e) + "\n")
-            sys.stderr.write("Check your configuration file\n")
             raise ConfigurationParsingError
 
         return config
@@ -217,23 +216,10 @@ class Kr():
             r = requests_method()
             json.loads(r.text)
             result = {
-                'retcode': 0,
                 'text': r.text
             }
-        except requests.exceptions.RequestException as e:
-            sys.stderr.write("Requests error\n")
-            sys.stderr.write(str(e) + "\n")
-            result = {
-                'retcode': 1,
-            }
-            # Inspired by https://stackoverflow.com/a/20725965
-        except json.decoder.JSONDecodeError as e:
-           # end of inspired by.
-            sys.stderr.write("JSON decoder error (probably not a Kalliope server)\n")
-            sys.stderr.write(str(e) + "\n")
-            result = {
-                'retcode': 1,
-            }
+        except (requests.exceptions.RequestException, json.decoder.JSONDecodeError):
+            raise
         return result
 
     ########################
@@ -322,19 +308,9 @@ class Kr():
                                  data=payload,
                                  auth=(args.username, args.password)))
         except (IOError, FileNotFoundError):
-            sys.stderr.write(str(e) + "\n")
-            sys.stderr.write("File " + args.audio_file + " not found\n")
-            result = {
-                'retcode': 1,
-            }
-            return result
-        except AudioFileFormatError as e:
-            sys.stderr.write(str(e) + "\n")
-            sys.stderr.write("Only WAV or MP3 files are compatible\n")
-            result = {
-                'retcode': 1,
-            }
-            return result
+            raise AudioFileError
+        except AudioFileFormatError:
+            raise
 
     '''
     # POST /mute

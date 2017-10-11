@@ -177,11 +177,12 @@ exec by-audio sub-command help
 Usage as an API
 ===============
 
-Each API method returns a dictionary containing
+When successful, each API method returns a dictionary containing
 
-    retcode     an integer 
     text        the text that the server returned. This variable is set only if 
                 the command was successful.
+
+otherwise an exception is raised.
 
 List of API methods
 -------------------
