@@ -28,7 +28,7 @@ from kalliope_rest import Kr
 
 def main(args=None):
 
-    kr = Kr()
+    kr = Kr(cli=True)
     args = kr.parser.parse_args()
     result = args.func(args)
     if 'text' in result:

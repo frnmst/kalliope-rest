@@ -174,6 +174,45 @@ exec by-audio sub-command help
       -h, --help   show this help message and exit
       -v, --voice  output the audio
 
+Usage as an API
+===============
+
+Each API method returns a dictionary containing
+
+    retcode     an integer 
+    text        the text that the server returned. This variable is set only if 
+                the command was successful.
+
+List of API methods
+-------------------
+
+    TODO
+
+    Kr().get_kalliope_version(args)
+        args.username
+        args.password
+        args.base_uri
+        
+    Kr().get_synapses(args)
+    Kr().get_synapse(args)
+    Kr().get_mute_status(args)
+    Kr().execute_by_name(args)
+    Kr().execute_by_order(args)
+    Kr().execute_by_audio(args)
+
+Example
+-------
+
+::
+
+    class Args():
+        def __init__(self):
+            self.base_uri='http://127.0.0.1:5000'
+            self.username='admin'
+            self.password='secret'
+
+    args = Args()
+    print(Kr().get_kalliope_version(args)['text'])
 
 Dependencies
 ============

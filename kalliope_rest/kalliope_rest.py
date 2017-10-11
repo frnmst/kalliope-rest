@@ -47,16 +47,21 @@ class AudioFileFormatError(Exception):
 
 class Kr():
 
-    def __init__(self):
+    def __init__(self,cli=False):
 
-        self.host = ''
-        self.port = ''
-        self.username = ''
-        self.password = ''
+        # Do all the initializations only when the CLI is used.
+        # This way, when instantiating the class from the API,
+        # all these initialization parts are skipped.
+        if cli:
+            self.host = ''
+            self.port = ''
+            self.username = ''
+            self.password = ''
 
-        self.parser = self._create_parser()
-        self.configuration = self._parse_configuration()
-        self.base_uri = 'http://' + self.host + ":" + self.port
+            self.configuration = self._parse_configuration()
+            self.parser = self._create_parser()
+        else:
+            pass
 
     def _create_user_config(self,cfg_file):
 
@@ -132,14 +137,44 @@ class Kr():
         execute_by_order_prs = egp.add_parser('by-order')
         execute_by_audio_prs = egp.add_parser('by-audio')
 
-        # Define the function callbacks.
-        get_kalliope_version_prs.set_defaults(func=self.get_kalliope_version)
-        get_synapses_prs.set_defaults(func=self.get_synapses)
-        get_synapse_prs.set_defaults(func=self.get_synapse)
-        get_mute_status_prs.set_defaults(func=self.get_mute_status)
-        execute_by_name_prs.set_defaults(func=self.execute_by_name)
-        execute_by_order_prs.set_defaults(func=self.execute_by_order)
-        execute_by_audio_prs.set_defaults(func=self.execute_by_audio)
+        self.base_uri = 'http://' + self.host + ":" + self.port
+
+        # Define the function callbacks and parameters.
+        get_kalliope_version_prs.set_defaults(
+            func=self.get_kalliope_version,
+            base_uri=self.base_uri,
+            username=self.username,
+            password=self.password)
+        get_synapses_prs.set_defaults(
+            func=self.get_synapses,
+            base_uri=self.base_uri,
+            username=self.username,
+            password=self.password)
+        get_synapse_prs.set_defaults(
+            func=self.get_synapse,
+            base_uri=self.base_uri,
+            username=self.username,
+            password=self.password)
+        get_mute_status_prs.set_defaults(
+            func=self.get_mute_status,
+            base_uri=self.base_uri,
+            username=self.username,
+            password=self.password)
+        execute_by_name_prs.set_defaults(
+            func=self.execute_by_name,
+            base_uri=self.base_uri,
+            username=self.username,
+            password=self.password)
+        execute_by_order_prs.set_defaults(
+            func=self.execute_by_order,
+            base_uri=self.base_uri,
+            username=self.username,
+            password=self.password)
+        execute_by_audio_prs.set_defaults(
+            func=self.execute_by_audio,
+            base_uri=self.base_uri,
+            username=self.username,
+            password=self.password)
 
         get_synapse_prs.add_argument('synapse_name',
                                      metavar="SYNAPSE_NAME",
@@ -211,27 +246,27 @@ class Kr():
     # GET /
     def get_kalliope_version(self, args):
 
-        return self._abstract_http_method(lambda: requests.get(self.base_uri + "/",
-                                              auth=(self.username, self.password)))
+        return self._abstract_http_method(lambda: requests.get(args.base_uri + "/",
+                                              auth=(args.username, args.password)))
     # GET /synapses
     def get_synapses(self, args):
 
-        return self._abstract_http_method(lambda: requests.get(self.base_uri + "/synapses",
-                                              auth=(self.username, self.password)))
+        return self._abstract_http_method(lambda: requests.get(args.base_uri + "/synapses",
+                                              auth=(args.username, args.password)))
 
     # GET /synapses/<synapse_name>
     def get_synapse(self, args):
 
         return self._abstract_http_method(lambda:
-           requests.get(self.base_uri + "/synapses" + "/" + args.synapse_name,
-                        auth=(self.username, self.password)))
+           requests.get(args.base_uri + "/synapses" + "/" + args.synapse_name,
+                        auth=(args.username, args.password)))
 
     # GET /mute
     def get_mute_status(self, args):
 
         return self._abstract_http_method(lambda:
-           requests.get(self.base_uri + "/mute",
-                        auth=(self.username, self.password)))
+           requests.get(args.base_uri + "/mute",
+                        auth=(args.username, args.password)))
 
     # POST /synapses/start/id/<synapse_name>
     def execute_by_name(self, args):
@@ -239,9 +274,9 @@ class Kr():
         self._perform_voice_output(args)
         payload = {'no_voice': self.no_voice}
         return self._abstract_http_method(lambda:
-               requests.post(self.base_uri + "/synapses/start/id" + "/" + args.synapse_name,
+               requests.post(args.base_uri + "/synapses/start/id" + "/" + args.synapse_name,
                                  json=payload,
-                                 auth=(self.username, self.password)))
+                                 auth=(args.username, args.password)))
 
     # POST /synapses/start/order
     def execute_by_order(self, args):
@@ -249,9 +284,9 @@ class Kr():
         self._perform_voice_output(args)
         payload = {'order': args.order_string, 'no_voice': self.no_voice}
         return self._abstract_http_method(lambda:
-               requests.post(self.base_uri + "/synapses/start/order",
+               requests.post(args.base_uri + "/synapses/start/order",
                              json=payload,
-                             auth=(self.username, self.password)))
+                             auth=(args.username, args.password)))
 
     #####################################################################
     ### Execute by audio method. This requires more complex operations. #
@@ -283,10 +318,10 @@ class Kr():
             self._get_audio_file_mime(args)
             files, payload = self._build_audio_file_payloads(args)
             return self._abstract_http_method(lambda:
-                   requests.post(self.base_uri + "/synapses/start/audio",
+                   requests.post(args.base_uri + "/synapses/start/audio",
                                  files=files,
                                  data=payload,
-                                 auth=(self.username, self.password)))
+                                 auth=(args.username, args.password)))
         except (IOError, FileNotFoundError):
             sys.stderr.write("File " + args.audio_file + " not found\n")
             return 1
@@ -301,9 +336,9 @@ class Kr():
 
         payload = {'mute': args.mute}
         return self._abstract_http_method(lambda:
-               requests.post(self.base_uri + "/mute",
+               requests.post(args.base_uri + "/mute",
                              json=payload,
-                             auth=(self.username, self.password)))
+                             auth=(args.username, args.password)))
     '''
 
 if __name__ == '__main__':
