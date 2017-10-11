@@ -24,16 +24,19 @@
 
 import argparse
 import sys
-from kalliope_rest import Kr
+from kalliope_rest import Kr, ConfigurationParsingError
 
 def main(args=None):
 
-    kr = Kr(cli=True)
-    args = kr.parser.parse_args()
-    result = args.func(args)
-    if 'text' in result:
-        print(result['text'])
-    sys.exit(result['retcode'])
+    try:
+        kr = Kr(cli=True)
+        args = kr.parser.parse_args()
+        result = args.func(args)
+        if 'text' in result:
+            print(result['text'])
+        sys.exit(result['retcode'])
+    except ConfigurationParsingError:
+        sys.exit(1)
 
 if __name__ == '__main__':
 

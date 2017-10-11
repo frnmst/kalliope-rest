@@ -34,6 +34,9 @@ import json
 import ipaddress
 from shutil import copyfile
 
+PORT_MIN = 1
+PORT_MAX = 65535
+
 class AudioFileFormatError(Exception):
 
     """ Raise an exception if the provided audio file is not conforming
@@ -44,6 +47,10 @@ class AudioFileFormatError(Exception):
         'audio/x-mpeg-3'
     """
 
+class ConfigurationParsingError(Exception):
+
+    """ Pass
+    """
 
 class Kr():
 
@@ -58,10 +65,11 @@ class Kr():
             self.username = ''
             self.password = ''
 
-            self.configuration = self._parse_configuration()
-            self.parser = self._create_parser()
-        else:
-            pass
+            try:
+                self.configuration = self._parse_configuration()
+                self.parser = self._create_parser()
+            except ConfigurationParsingError:
+                raise
 
     def _create_user_config(self,cfg_file):
 
@@ -86,16 +94,6 @@ class Kr():
             self.host = config.get('Network',
                                    'Host',
                                    fallback='127.0.0.1')
-
-            # FIXME: find a way to do a "return 1" to thr main function if an
-            # exception is raised within this method.
-            # TODO: Check if self.port is an integer between 1 and <PORT MAX>
-
-            try:
-                ipaddress.ip_address(self.host)
-            except ValueError:
-                raise
-
             self.port = config.get('Network',
                                    'Port',
                                    fallback='5000')
@@ -105,20 +103,20 @@ class Kr():
             self.password = config.get('Administration',
                                        'Password',
                                        fallback='secret')
-        except configparser.Error as e:
-            sys.stderr.write(str(e) + "\n")
-        except ValueError as e:
-            sys.stderr.write(str(e) + "\n")
-        finally:
-            return config
 
-    # kv
-    #   kv
-    #   sps
-    #   sp <name>
-    #   exec by-name <synapse-name>
-    #   exec by-order <text-order>
-    #   exec by-audio <audio-file>
+            # Check if the host variable is a valid IPv4 or IPv6 address.
+            ipaddress.ip_address(self.host)
+            # Check that the port variable is contained in the correct range.
+            if int(self.port) < PORT_MIN or int(self.port) > PORT_MAX:
+                raise ValueError('Port number out of range')
+
+        except (configparser.Error, ValueError) as e:
+            sys.stderr.write(str(e) + "\n")
+            sys.stderr.write("Check your configuration file\n")
+            raise ConfigurationParsingError
+
+        return config
+
     def _create_parser(self):
 
         parser = argparse.ArgumentParser(description='Kalliope REST API frontend',
@@ -207,6 +205,7 @@ class Kr():
         return parser
 
     def _perform_voice_output(self,args):
+
         if args.voice:
             self.no_voice = 'false'
         else:
@@ -230,7 +229,7 @@ class Kr():
             # Inspired by https://stackoverflow.com/a/20725965
         except json.decoder.JSONDecodeError as e:
            # end of inspired by.
-            sys.stderr.write("JSON decoder error\n")
+            sys.stderr.write("JSON decoder error (probably not a Kalliope server)\n")
             sys.stderr.write(str(e) + "\n")
             result = {
                 'retcode': 1,
@@ -323,12 +322,19 @@ class Kr():
                                  data=payload,
                                  auth=(args.username, args.password)))
         except (IOError, FileNotFoundError):
+            sys.stderr.write(str(e) + "\n")
             sys.stderr.write("File " + args.audio_file + " not found\n")
-            return 1
+            result = {
+                'retcode': 1,
+            }
+            return result
         except AudioFileFormatError as e:
             sys.stderr.write(str(e) + "\n")
             sys.stderr.write("Only WAV or MP3 files are compatible\n")
-            return 1
+            result = {
+                'retcode': 1,
+            }
+            return result
 
     '''
     # POST /mute
