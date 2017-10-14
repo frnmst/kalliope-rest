@@ -24,9 +24,12 @@
 
 import requests
 import json
-import argparse
 import sys
-from kalliope_rest import Kr, ConfigurationParsingError, AudioFileError, AudioFileFormatError
+from .api_exceptions import (AudioFileError,
+                             AudioFileFormatError)
+from .cli_exceptions import ConfigurationParsingError
+from .cli import CliInterface
+
 
 def main(args=None):
     """ Call the CLI parser and handle all possible exception returned from the
@@ -34,7 +37,7 @@ def main(args=None):
     """
 
     try:
-        kr = Kr(cli=True)
+        kr = CliInterface()
         args = kr.parser.parse_args()
         result = args.func(args)
         if 'text' in result:

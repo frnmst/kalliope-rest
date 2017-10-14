@@ -17,6 +17,15 @@ Kalliope configuration_ file.
 
 .. _configuration: https://github.com/kalliope-project/kalliope/blob/master/Docs/settings.md#rest-api
 
+Live testing
+============
+
+::
+
+    $ git clone https://github.com/frnmst/kalliope_rest.git
+    $ cd kalliope_rest
+    $ python -m kalliope_rest -h
+
 Installation
 ============
 
