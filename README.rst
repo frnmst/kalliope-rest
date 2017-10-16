@@ -42,7 +42,7 @@ Application Programming interface example
 Documentation
 =============
 
-https://frnmst.gitlab.io/kalliope-rest/index.html
+https://frnmst.github.io/kalliope-rest/index.html
 
 TODO
 ====
