@@ -1,0 +1,194 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Developer Interface &#8212; kalliope-rest 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CLI Usage helps" href="cli.html" />
+    <link rel="prev" title="Installation" href="install.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-kalliope_rest">
+<span id="developer-interface"></span><h1>Developer Interface<a class="headerlink" href="#module-kalliope_rest" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="main-interface">
+<h2>Main Interface<a class="headerlink" href="#main-interface" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="kalliope_rest.get_kalliope_version">
+<code class="descclassname">kalliope_rest.</code><code class="descname">get_kalliope_version</code><span class="sig-paren">(</span><em>base_uri</em>, <em>username</em>, <em>password</em><span class="sig-paren">)</span><a class="headerlink" href="#kalliope_rest.get_kalliope_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return Kalliope’s version.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalliope_rest.get_synapses">
+<code class="descclassname">kalliope_rest.</code><code class="descname">get_synapses</code><span class="sig-paren">(</span><em>base_uri</em>, <em>username</em>, <em>password</em><span class="sig-paren">)</span><a class="headerlink" href="#kalliope_rest.get_synapses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of all available synapses and their details.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalliope_rest.get_synapse">
+<code class="descclassname">kalliope_rest.</code><code class="descname">get_synapse</code><span class="sig-paren">(</span><em>base_uri</em>, <em>username</em>, <em>password</em>, <em>synapse_name</em><span class="sig-paren">)</span><a class="headerlink" href="#kalliope_rest.get_synapse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the selected synapse and its details.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalliope_rest.get_listening_status">
+<code class="descclassname">kalliope_rest.</code><code class="descname">get_listening_status</code><span class="sig-paren">(</span><em>base_uri</em>, <em>username</em>, <em>password</em><span class="sig-paren">)</span><a class="headerlink" href="#kalliope_rest.get_listening_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tells if Kalliope is ready to listen for vocal orders.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalliope_rest.execute_by_name">
+<code class="descclassname">kalliope_rest.</code><code class="descname">execute_by_name</code><span class="sig-paren">(</span><em>base_uri</em>, <em>username</em>, <em>password</em>, <em>synapse_name</em>, <em>voice</em><span class="sig-paren">)</span><a class="headerlink" href="#kalliope_rest.execute_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes a synapse with the specified name.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalliope_rest.execute_by_order">
+<code class="descclassname">kalliope_rest.</code><code class="descname">execute_by_order</code><span class="sig-paren">(</span><em>base_uri</em>, <em>username</em>, <em>password</em>, <em>order</em>, <em>voice</em><span class="sig-paren">)</span><a class="headerlink" href="#kalliope_rest.execute_by_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the specified order by text.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="kalliope_rest.execute_by_audio">
+<code class="descclassname">kalliope_rest.</code><code class="descname">execute_by_audio</code><span class="sig-paren">(</span><em>base_uri</em>, <em>username</em>, <em>password</em>, <em>audio_file</em>, <em>voice</em><span class="sig-paren">)</span><a class="headerlink" href="#kalliope_rest.execute_by_audio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the specified order by audio.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="kalliope_rest.AudioFileError">
+<em class="property">exception </em><code class="descclassname">kalliope_rest.</code><code class="descname">AudioFileError</code><a class="headerlink" href="#kalliope_rest.AudioFileError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raises an exception if the audio file is not found or if there
+is a filesystem error.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="kalliope_rest.AudioFileFormatError">
+<em class="property">exception </em><code class="descclassname">kalliope_rest.</code><code class="descname">AudioFileFormatError</code><a class="headerlink" href="#kalliope_rest.AudioFileFormatError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raises an exception if the provided audio file is not conforming
+to the following format specifications (mime types):
+‘audio/wav’,
+‘audio/x-wav’,
+‘audio/mpeg3’,
+‘audio/x-mpeg-3’</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">kalliope-rest</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=frnmst&repo=kalliope-rest&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#main-interface">Main Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI Usage helps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration_file.html">Configuration File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="copyright_license.html">Copyright and License</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="install.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="cli.html" title="next chapter">CLI Usage helps</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Franco Masotti.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/frnmst/kalliope-rest" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,227 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Quickstart &#8212; kalliope-rest 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="install.html" />
+    <link rel="prev" title="Welcome to kalliope-rest’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<p>The first thing to do is to have a working instance of Kalliope, ready to
+execute orders. With these examples we wil assume that outr kalliope server
+lies on the <code class="docutils literal"><span class="pre">127.0.0.1</span></code> address, listening on the port <code class="docutils literal"><span class="pre">5000</span></code>. We will also
+assume to have <code class="docutils literal"><span class="pre">admin</span></code> and <code class="docutils literal"><span class="pre">secret</span></code> as credentials. You also need to enable
+the REST API on the server side.</p>
+<div class="section" id="enabling-the-rest-api">
+<h2>Enabling the REST API<a class="headerlink" href="#enabling-the-rest-api" title="Permalink to this headline">¶</a></h2>
+<p>To be able to run synapses using the <a class="reference external" href="https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md">API</a>, you need to enable <code class="docutils literal"><span class="pre">CORS</span> <span class="pre">requests</span></code>
+in your Kalliope <a class="reference external" href="https://github.com/kalliope-project/kalliope/blob/master/Docs/settings.md#rest-api">configuration</a> file.</p>
+</div>
+<div class="section" id="using-the-cli">
+<h2>Using the CLI<a class="headerlink" href="#using-the-cli" title="Permalink to this headline">¶</a></h2>
+<p>You can use the CLI without installation</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ git clone https://github.com/frnmst/kalliope_rest.git
+$ cd kalliope_rest
+$ python -m kalliope_rest
+</pre></div>
+</div>
+<p>If you install the package you will get an executable file in the executables
+directory (for example /usr/bin), so you can call the program with</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ kalliope_rest
+</pre></div>
+</div>
+<p>Here are a couple of examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ kalliope_rest exec by-order &quot;hello&quot;
+
+{
+    &quot;matched_synapses&quot;: [
+        {
+            &quot;matched_order&quot;: null,
+            &quot;neuron_module_list&quot;: [
+                {
+                    &quot;generated_message&quot;: &quot;Bonjourmonsieur&quot;,
+                    &quot;neuron_name&quot;: &quot;Say&quot;
+                }
+            ],
+            &quot;synapse_name&quot;: &quot;say-hello-fr&quot;
+        }
+    ],
+    &quot;status&quot;: &quot;complete&quot;,
+    &quot;user_order&quot;: null
+}
+
+$ kalliope-rest exec by-audio &quot;hello-command.wav&quot; --voice
+
+{
+    &quot;matched_synapses&quot;: [
+    {
+      &quot;matched_order&quot;: &quot;Bonjour&quot;,
+      &quot;neuron_module_list&quot;: [
+        {
+          &quot;generated_message&quot;: &quot;Bonjour monsieur&quot;,
+          &quot;neuron_name&quot;: &quot;Say&quot;
+        }
+      ],
+      &quot;synapse_name&quot;: &quot;say-hello-fr&quot;
+    }
+  ],
+  &quot;status&quot;: &quot;complete&quot;,
+  &quot;user_order&quot;: &quot;bonjour&quot;
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-the-api">
+<h2>Using the API<a class="headerlink" href="#using-the-api" title="Permalink to this headline">¶</a></h2>
+<p>Once you download and install the library, the first thing to do is to import
+the module.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">kalliope_rest</span>
+</pre></div>
+</div>
+<p>We can then try the most basic method</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kalliope_rest</span><span class="o">.</span><span class="n">get_kalliope_version</span><span class="p">(</span><span class="s1">&#39;http://127.0.0.1:5000&#39;</span><span class="p">,</span><span class="s1">&#39;admin&#39;</span><span class="p">,</span><span class="s1">&#39;secret&#39;</span><span class="p">)</span>
+<span class="go">{\n  &quot;Kalliope version&quot;: &quot;0.4.6&quot;\n}\n&#39;</span>
+</pre></div>
+</div>
+<p>A less confusing output would be</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kalliope_rest</span><span class="o">.</span><span class="n">get_kalliope_version</span><span class="p">(</span><span class="s1">&#39;http://127.0.0.1:5000&#39;</span><span class="p">,</span><span class="s1">&#39;admin&#39;</span><span class="p">,</span><span class="s1">&#39;secret&#39;</span><span class="p">))</span>
+<span class="go">{</span>
+<span class="go">  &quot;Kalliope version&quot;: &quot;0.4.6&quot;</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+<p>Remember that this is JSON, so it can be parsed with the json module which is
+part of Python. In case you run one of the execute methods, not only the
+specified order will be executed, but you will also receive a response from
+the server. With some work you can also make your local computer speak the
+answer itself with, for example, espeak.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">json</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">addict</span> <span class="k">import</span> <span class="n">Dict</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">req</span> <span class="o">=</span> <span class="n">kalliope_rest</span><span class="o">.</span><span class="n">execute_by_order</span><span class="p">(</span><span class="s1">&#39;http://127.0.0.1:5000&#39;</span><span class="p">,</span><span class="s1">&#39;admin&#39;</span><span class="p">,</span><span class="s1">&#39;secret&#39;</span><span class="p">,</span><span class="s2">&quot;ciao&quot;</span><span class="p">,</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ans</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">req</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">speak</span> <span class="o">=</span> <span class="n">ans</span><span class="o">.</span><span class="n">matched_synapses</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">neuron_module_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">generated_message</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;espeak -v it &quot;&#39;</span> <span class="o">+</span> <span class="n">speak</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">kalliope-rest</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=frnmst&repo=kalliope-rest&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#enabling-the-rest-api">Enabling the REST API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-cli">Using the CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-api">Using the API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Developer Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI Usage helps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration_file.html">Configuration File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="copyright_license.html">Copyright and License</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to kalliope-rest’s documentation!</a></li>
+      <li>Next: <a href="install.html" title="next chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Franco Masotti.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/quickstart.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/frnmst/kalliope-rest" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

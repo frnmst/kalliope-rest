@@ -1,0 +1,324 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CLI Usage helps &#8212; kalliope-rest 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Configuration File" href="configuration_file.html" />
+    <link rel="prev" title="Developer Interface" href="api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cli-usage-helps">
+<h1>CLI Usage helps<a class="headerlink" href="#cli-usage-helps" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="main-help">
+<h2>Main help<a class="headerlink" href="#main-help" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>usage: kalliope_rest [-h] [-v] {kv,sps,sp,listening,exec} …</p>
+<p>Kalliope REST API frontend</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><dl class="first last docutils">
+<dt>{kv,sps,sp,listening,exec}</dt>
+<dd>kv                  Get the version of Kalliope
+sps                 Get all the synapses
+sp                  Get the selected synapse
+listening           tells if Kalliope is waiting for orders
+exec                Execute a synapse by different criterias</dd>
+</dl>
+</dd>
+<dt>optional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>show this help message and exit</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-v</span>, <span class="option">--version</span></kbd></td>
+<td>show program’s version number and exit</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<p>Return values: 0 OK, 1 API Error, 2 Invalid command</p>
+</div></blockquote>
+</div>
+<div class="section" id="sps-sub-command">
+<h2>sps sub-command<a class="headerlink" href="#sps-sub-command" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>usage: kalliope_rest sps [-h]</p>
+<dl class="docutils">
+<dt>optional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>show this help message and exit</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="sp-sub-command">
+<h2>sp sub-command<a class="headerlink" href="#sp-sub-command" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>usage: kalliope_rest sp [-h] SYNAPSE_NAME</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd>SYNAPSE_NAME  the synapse name</dd>
+<dt>optional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>show this help message and exit</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="listening-sub-command">
+<h2>listening sub-command<a class="headerlink" href="#listening-sub-command" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>usage: kalliope_rest listening [-h]</p>
+<dl class="docutils">
+<dt>optional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>show this help message and exit</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="exec-sub-command">
+<h2>exec sub-command<a class="headerlink" href="#exec-sub-command" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>usage: kalliope_rest exec [-h] {by-name,by-order,by-audio} …</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd>{by-name,by-order,by-audio}</dd>
+<dt>optional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>show this help message and exit</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="exec-by-name-sub-command">
+<h2>exec by-name sub-command<a class="headerlink" href="#exec-by-name-sub-command" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>usage: kalliope_rest exec by-name [-h] [-v] [-p PARAMETER_LIST] SYNAPSE_NAME</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd>SYNAPSE_NAME          the synapse name</dd>
+<dt>optional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>show this help message and exit</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-v</span>, <span class="option">--voice</span></kbd></td>
+<td>output the audio</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd><span class="option">-p <var>PARAMETER_LIST</var></span>, <span class="option">--parameters <var>PARAMETER_LIST</var></span></kbd></td>
+</tr>
+<tr><td>&#160;</td><td>pass parameters to the synapse</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="exec-by-order-sub-command">
+<h2>exec by-order sub-command<a class="headerlink" href="#exec-by-order-sub-command" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>usage: kalliope_rest exec by-order [-h] [-v] ORDER_STRING</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd>ORDER_STRING  a textual version of the vocal order</dd>
+<dt>optional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>show this help message and exit</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-v</span>, <span class="option">--voice</span></kbd></td>
+<td>output the audio</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="exec-by-audio-sub-command">
+<h2>exec by-audio sub-command<a class="headerlink" href="#exec-by-audio-sub-command" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>usage: kalliope_rest exec by-audio [-h] [-v] FILE_NAME</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd>FILE_NAME    an audio file containing the vocal order</dd>
+<dt>optional arguments:</dt>
+<dd><table class="first last docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></td>
+<td>show this help message and exit</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-v</span>, <span class="option">--voice</span></kbd></td>
+<td>output the audio</td></tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">kalliope-rest</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=frnmst&repo=kalliope-rest&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Developer Interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CLI Usage helps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#main-help">Main help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sps-sub-command">sps sub-command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sp-sub-command">sp sub-command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#listening-sub-command">listening sub-command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exec-sub-command">exec sub-command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exec-by-name-sub-command">exec by-name sub-command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exec-by-order-sub-command">exec by-order sub-command</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exec-by-audio-sub-command">exec by-audio sub-command</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration_file.html">Configuration File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test.html">Testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="copyright_license.html">Copyright and License</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="api.html" title="previous chapter">Developer Interface</a></li>
+      <li>Next: <a href="configuration_file.html" title="next chapter">Configuration File</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Franco Masotti.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/cli.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/frnmst/kalliope-rest" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
