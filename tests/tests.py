@@ -59,7 +59,7 @@ class TestRestApi(pyfakefs.fake_filesystem_unittest.TestCase):
         m.get(uri,
               status_code = 200,
               text=json_payload)
-        self.assertEqual(api_function()['text'],json_payload)
+        self.assertEqual(api_function(),json_payload)
 
         # Assert 200 with an invalid http text. Assert raises the json error.
         m.get(uri,
@@ -81,7 +81,7 @@ class TestRestApi(pyfakefs.fake_filesystem_unittest.TestCase):
         m.post(uri,
               status_code = 201,
               text=json_payload)
-        self.assertEqual(api_function()['text'],json_payload)
+        self.assertEqual(api_function(),json_payload)
 
         # Assert 201 with an invalid http text.
         m.post(uri,

@@ -40,8 +40,8 @@ def main(args=None):
         kr = CliInterface()
         args = kr.parser.parse_args()
         result = args.func(args)
-        if 'text' in result:
-            print(result['text'])
+        if result is not None:
+            print(result)
         retcode = 0
     except ConfigurationParsingError:
         sys.stderr.write(str(e) + "\n")

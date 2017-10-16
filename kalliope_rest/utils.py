@@ -41,9 +41,7 @@ def abstract_http_method(requests_method):
     try:
         r = requests_method()
         json.loads(r.text)
-        result = {
-            'text': r.text
-        }
+        result = r.text
     except (requests.exceptions.RequestException, json.decoder.JSONDecodeError):
         raise
     return result
