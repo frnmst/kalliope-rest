@@ -44,18 +44,6 @@ Documentation
 
 https://frnmst.github.io/kalliope-rest/index.html
 
-TODO
-====
-
-- Unit tests (in progress)
-- New commands
-    - New mute commands (in progress)
-    - Ability to pass paramters to the exec by name subcommand
-    - Ability to pass paramters as files (see 
-      https://github.com/kalliope-project/kalliope/blob/master/Docs/rest_api.md#run-a-synapse-from-an-order specifically the accent-quotes example)
-- PyPi package (in progress)
-- Is there a possibility to encrypt this API?
-
 Copyright and License
 =====================
 
