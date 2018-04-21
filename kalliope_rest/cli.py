@@ -82,7 +82,7 @@ class CliInterface():
     def _create_user_config(self,cfg_file):
         # Create the user's configuration file.
         source = pkg_resources.resource_filename(__name__, 'kalliope_rest.conf.dist')
-        shutils.copyfile(source,cfg_file)
+        copyfile(source,cfg_file)
 
     def parse_configuration(self):
         PORT_MIN = 1

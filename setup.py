@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='kalliope_rest',
     version='0.0.1',
-    packages=find_packages(),
+    packages=find_packages(exclude=['*tests*']),
     license='MIT',
     long_description=open('README.rst').read(),
     package_data={
@@ -25,10 +25,9 @@ setup(
     test_suite='tests',
     classifiers=[
         'Development Status :: 3 - Alpha',
-
         'Intended Audience :: Developers',
+        'Environment :: Console',
 #        'Topic :: Software Development :: Build Tools',
-
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.2',
