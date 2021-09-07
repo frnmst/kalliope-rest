@@ -1,6 +1,6 @@
 # Project moved
 
-- [https://software.franco.net.eu.org/frnmst/kalliope-rest](https://software.franco.net.eu.org/frnmst/kalliope-rest)
+- [https://software.franco.net.eu.org/frnmst-archives/kalliope-rest](https://software.franco.net.eu.org/frnmst-archives/kalliope-rest)
   - personal instance
   - see [this](https://software.franco.net.eu.org/frnmst/software.franco.net.eu.org/src/branch/master/privacy_policy.md#user-content-table-of-contents)
 - [https://codeberg.org/frnmst/kalliope-rest](https://codeberg.org/frnmst/kalliope-rest)
